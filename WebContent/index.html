@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JIT档案管理系统</title>
+<link rel="stylesheet" href="css/iview.css">
+<link rel="stylesheet" href="css/ionicons.css">
+
+<!--引入js-->
+<!--解决axios在ie和手机上的兼容性问题-->
+<script type="text/javascript" src="js/polyfill.min.js"></script>
+<script type="text/javascript" src="js/babel.min.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/iview.min.js"></script>
+<script type="text/javascript" src="js/callBackService.js"></script>
+</head>
+<body>
+	<div id="app">
+		<div id="nav">
+			<ul>
+				<li class="head_logoText">金陵科技学院档案管理系统</li>
+				<a  class="head_a">注册</a>
+				<a href="page/login.html" class="head_a">登录</a>
+			</ul>
+		</div>
+		<carousel autoplay v-model="value1" loop> <carousel-item
+			v-for="banner in banners"> <img class="bannerPic"
+			:src="banner.pic_url">
+		</carousel-item> </carousel>
+
+	</div>
+
+</body>
+<style type="text/css">
+.head_logoText {
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.head_a {
+	float: right;
+	margin-right: 30px;
+	color: #ffffff
+}
+
+#nav {
+	height: 50px;
+	width: 100%;
+	background-color: #00a8ff;
+}
+
+#nav ul {
+	margin: 0 0 0 30px;
+	padding: 10px;
+	font-size: 20px;
+	color: #FFF;
+	line-height: 30px;
+	white-space: nowrap;
+}
+
+#nav li {
+	margin-left: 30px;
+	list-style-type: none;
+	display: inline;
+}
+
+.demo-carousel {
+	background: #f5f6fa;
+	width: 100%;
+	height: 200px;
+}
+.bannerDiv{
+	width:500px
+
+}
+
+.bannerPic {
+	height: 450px;
+	width: 100%;
+}
+a:hover { color:red; }
+</style>
+<script type="text/javascript">
+
+var Main = {
+        data () {
+            return {
+                value1: 0,
+                banners:[
+                    {
+                        "pic_url": "http://p7ucqj1rl.bkt.clouddn.com/banner_ams.jpg"
+                    },
+                    {
+                        "pic_url": "http://p7ucqj1rl.bkt.clouddn.com/banner_building.jpg"
+                    },
+                    {
+                        "pic_url": "http://p7ucqj1rl.bkt.clouddn.com/banner_library.jpg"
+                    }
+                ]
+            }
+        },
+		mounted: function () {
+            let [a,b,c] = [1,2,3];
+            console.log(a,b,c);
+            alert("es6语法运行完毕")
+            // ban
+            // callAxiosGetNoParams("/archivesManagementBack/getBannerPics.do", this.moutedSuccess, this.moutedFailed)
+        },
+        methods: {
+        	
+        	moutedSuccess(data) {
+        		console.log("查到的信息为==>"+JSON.stringify(data))
+        		this.banners = data.banner
+        	},
+
+            moutedFailed(data) {
+            	console.log("初始化失败")
+
+            },
+        	
+        }
+    }
+
+var Component = Vue.extend(Main)
+new Component().$mount('#app')
+
+
+</script>
+</html>

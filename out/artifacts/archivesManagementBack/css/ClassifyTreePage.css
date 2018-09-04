@@ -1,0 +1,55 @@
+html {
+	font-size: .625em;
+	font-size: calc(1em * .625);
+	/*background: #f4f4f4;*/
+	background-color: rgba(220,220,220, 0.1);
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+}
+
+html, body {
+	margin: 0;
+	height: 100%;
+}
+
+
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	padding: 0;
+	font: normal 300 1.4em / 1.2 'Open-sans', helvetica, sans-serif;
+	color: #111;
+}
+
+#app{
+
+	padding-top: 10px;
+	padding-left: 3%;
+	width: 65%;
+
+
+}
+
+
+.formSpan {
+	font-size: 13px;
+	font-weight: bold;
+	color: rgb(70, 76, 91);
+}
+
+/* * {
+	margin: 0;
+	padding: 0;
+} */
+
+#left {
+	float: left;
+	width: 500px;
+	background-color: green;
+}
+
+#content {
+	background-color: orange;
+	margin-left: 550px;
+}

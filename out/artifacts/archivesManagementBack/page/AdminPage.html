@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>档案管理系统后台管理</title>
+    <link rel="stylesheet" href="../css/iview.css">
+    <link rel="stylesheet" href="../css/ionicons.css">
+
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <!--<script type="text/javascript" src="https://unpkg.com/vue-router/dist/vue-router.js"></script>-->
+    <script type="text/javascript" src="../js/iview.min.js"></script>
+    <script type="text/babel" src="../js/WXAdminPage.js"></script>
+    <!--<script type="text/javascript" src="js/callBackService.js"></script>-->
+</head>
+<body>
+<div id="app">
+    <div class="layout">
+        <layout>
+            <i-header :style="{minHeight: '5vh'}">
+                <i-menu mode="horizontal" theme="dark" active-name="1">
+                    <span class="layout-logo">
+                        档案管理系统管理员后台
+                    </span>
+                    <div class="layout-nav">
+                        <menu-item name="1">
+                            <icon type="ios-navigate"></icon>
+                            Item 1
+                        </menu-item>
+                        <menu-item name="2">
+                            <icon type="ios-keypad"></icon>
+                            Item 2
+                        </menu-item>
+                        <menu-item name="3">
+                            <icon type="ios-analytics"></icon>
+                            Item 3
+                        </menu-item>
+                        <menu-item name="4">
+                            <icon type="ios-paper"></icon>
+                            Item 4
+                        </menu-item>
+                    </div>
+                </i-menu>
+            </i-header>
+            <layout :style="{minHeight: '90vh'}">
+                <sider hide-trigger :style="{background: '#fff',minWidth: '300px'}">
+                    <!--@on-select="menuClick"-->
+                    <i-menu v-for="menu in menus" theme="light" width="auto">
+                        <submenu :name="menu.submenuName">
+                            <template slot="title">
+                                <icon :type="menu.submenuIcon"></icon>
+                                {{menu.submenuTitle}}
+                            </template>
+                            <li v-for="item in menu.menuItem" onclick="itemClick(item)">
+                                <menu-item :name="item.name" @click.native="itemClick(item)">{{item.title}}</menu-item>
+                            </li>
+                        </submenu>
+                    </i-menu>
+                </sider>
+                <layout :style="{padding: '5px', background: '#e3e8ee'}">
+                    <row :gutter="32">
+                        <i-col span="32" class="demo-tabs-style1"
+                               style="margin-top:10px;minHeight: 90vh;margin-left: 20px;margin-right: 20px">
+                            <tabs :value="tabsValue" type="card" closable>
+                                <tab-pane v-for="tab in tabs" :key="tab.key" :name="tab.name" :label="tab.label">
+                                    <iframe name="toppage" width=100% height=100%  frameborder="no"
+                                            v-bind:src="tab.key"></iframe>
+                                </tab-pane>
+                                <i-button type="warning" @click="handleTabsCloseAll" size="small"
+                                          slot="extra">关闭所有标签
+                                </i-button>
+                            </tabs>
+                        </i-col>
+                    </row>
+                </layout>
+            </layout>
+        </layout>
+    </div>
+</div>
+</body>
+
+<style>
+    #app {
+        /*padding: 32px;*/
+    }
+
+    .layout {
+        /*border: 1px solid #d7dde4;*/
+        background: #f5f7f9;
+        position: relative;
+        /*border-radius: 4px;*/
+        overflow: hidden;
+    }
+
+    .layout-logo {
+        width: 290px;
+        height: 30px;
+        /*background: #5b6270;*/
+        /*border-radius: 3px;*/
+        float: left;
+        position: relative;
+        /*top: 15px;*/
+        left: 5px;
+        font-size: 25px;
+        font-weight: bold;
+        color: #FFFFFF;
+
+    }
+
+    .layout-nav {
+        width: 450px;
+        margin: 0 auto;
+        margin-right: 20px;
+    }
+
+    .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content {
+        height: 800px;
+        /*minHeight: 90vh;*/
+        margin-top: -16px;
+    }
+
+    .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-content > .ivu-tabs-tabpane {
+        background: #fff;
+        padding: 16px;
+    }
+
+    .demo-tabs-style1 > .ivu-tabs.ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab {
+        border-color: transparent;
+    }
+
+    .demo-tabs-style1 > .ivu-tabs-card > .ivu-tabs-bar .ivu-tabs-tab-active {
+        border-color: #fff;
+    }
+
+</style>
+
+</html>

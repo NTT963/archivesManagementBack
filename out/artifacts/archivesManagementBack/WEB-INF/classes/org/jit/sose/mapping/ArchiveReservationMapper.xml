@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jit.sose.mapper.ArchiveReservationMapper" >
+  <resultMap id="BaseResultMap" type="org.jit.sose.entity.ArchiveReservation" >
+    <id column="Id" property="id" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="VARCHAR" />
+    <result column="rvDate" property="rvdate" jdbcType="DATE" />
+    <result column="rvStartTime" property="rvstarttime" jdbcType="TIME" />
+    <result column="rvEndTime" property="rvendtime" jdbcType="TIME" />
+    <result column="rvThing" property="rvthing" jdbcType="CHAR" />
+    <result column="rvPlace" property="rvplace" jdbcType="CHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    Id, userId, rvDate, rvStartTime, rvEndTime, rvThing, rvPlace, remark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from archivereservation
+    where Id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from archivereservation
+    where Id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="org.jit.sose.entity.ArchiveReservation" >
+    insert into archivereservation (Id, userId, rvDate, 
+      rvStartTime, rvEndTime, rvThing, 
+      rvPlace, remark)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=VARCHAR}, #{rvdate,jdbcType=DATE}, 
+      #{rvstarttime,jdbcType=TIME}, #{rvendtime,jdbcType=TIME}, #{rvthing,jdbcType=CHAR}, 
+      #{rvplace,jdbcType=CHAR}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.jit.sose.entity.ArchiveReservation" >
+    insert into archivereservation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        Id,
+      </if>
+      <if test="userid != null" >
+        userId,
+      </if>
+      <if test="rvdate != null" >
+        rvDate,
+      </if>
+      <if test="rvstarttime != null" >
+        rvStartTime,
+      </if>
+      <if test="rvendtime != null" >
+        rvEndTime,
+      </if>
+      <if test="rvthing != null" >
+        rvThing,
+      </if>
+      <if test="rvplace != null" >
+        rvPlace,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="rvdate != null" >
+        #{rvdate,jdbcType=DATE},
+      </if>
+      <if test="rvstarttime != null" >
+        #{rvstarttime,jdbcType=TIME},
+      </if>
+      <if test="rvendtime != null" >
+        #{rvendtime,jdbcType=TIME},
+      </if>
+      <if test="rvthing != null" >
+        #{rvthing,jdbcType=CHAR},
+      </if>
+      <if test="rvplace != null" >
+        #{rvplace,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jit.sose.entity.ArchiveReservation" >
+    update archivereservation
+    <set >
+      <if test="userid != null" >
+        userId = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="rvdate != null" >
+        rvDate = #{rvdate,jdbcType=DATE},
+      </if>
+      <if test="rvstarttime != null" >
+        rvStartTime = #{rvstarttime,jdbcType=TIME},
+      </if>
+      <if test="rvendtime != null" >
+        rvEndTime = #{rvendtime,jdbcType=TIME},
+      </if>
+      <if test="rvthing != null" >
+        rvThing = #{rvthing,jdbcType=CHAR},
+      </if>
+      <if test="rvplace != null" >
+        rvPlace = #{rvplace,jdbcType=CHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jit.sose.entity.ArchiveReservation" >
+    update archivereservation
+    set userId = #{userid,jdbcType=VARCHAR},
+      rvDate = #{rvdate,jdbcType=DATE},
+      rvStartTime = #{rvstarttime,jdbcType=TIME},
+      rvEndTime = #{rvendtime,jdbcType=TIME},
+      rvThing = #{rvthing,jdbcType=CHAR},
+      rvPlace = #{rvplace,jdbcType=CHAR},
+      remark = #{remark,jdbcType=VARCHAR}
+    where Id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

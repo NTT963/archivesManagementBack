@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jit.sose.mapper.ITreeMapper">
+    <select id="getAllTreeNode" parameterType="string" resultType="org.jit.sose.entity.TreeNode">
+        SELECT * FROM classifytree
+    </select>
+    
+    
+    <select id="getAdminyByClassifyID" parameterType="int" resultType="org.jit.sose.entity.ClassifyAdmin">
+        SELECT adminID , adminRole , staffName FROM classifyAdmin,`teacher`
+        WHERE classifyAdmin.adminID = `teacher`.staffID AND classifyAdmin.classifyID = #{classifyID}
+    </select>
+
+    <select id="getTreeNodeByClassifyId" parameterType="string" resultType="org.jit.sose.entity.TreeNode">
+        SELECT * FROM classifytree WHERE (`classifyId`= #{classifyId})
+
+    </select>
+
+    <select id="getTreeNodeByClassifyFatherId" parameterType="string" resultType="org.jit.sose.entity.TreeNode">
+        SELECT * FROM classifytree WHERE (`classifyFatherId`= #{classifyFatherId})
+    </select>
+
+    <insert id="addTreeNode" useGeneratedKeys="true" keyProperty="ID" keyColumn="ID" parameterType="org.jit.sose.entity.TreeNode">
+        INSERT INTO `classifytree` (`classifyId`, `title`,  `classifyFatherId`)
+        VALUES (#{classifyId}, #{title}, #{classifyFatherId})
+    </insert>
+
+    <delete id="deleteTreeNode" parameterType="string">
+        DELETE FROM `classifytree` WHERE (`classifyId`= #{classifyId})
+    </delete>
+
+    <update id="updateTreeNOde" parameterType="org.jit.sose.entity.TreeNode">
+        UPDATE `classifytree` SET `title`=#{title}, `classifyLevel`=#{classifyLevel} WHERE (`classifyId`=#{classifyId})
+    </update>
+
+    <insert id="insertAdmin">
+        INSERT INTO `classifyAdmin` (`classifyID`, `adminID`, `adminRole`) VALUES (#{classifyID},#{adminID},#{adminRole})
+    </insert>
+
+    <select id="getAllTeacher" resultType="String">
+        SELECT CONCAT_WS('-',staffID,staffName) FROM teacher
+    </select>
+
+    <select id="deleteAdmin" parameterType="string">
+        DELETE FROM classifyAdmin WHERE classifyAdmin.classifyID = #{ID}
+    </select>
+
+</mapper>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统报表</title>
+    <link rel="stylesheet" href="../css/iview.css">
+    <link rel="stylesheet" href="../css/ionicons.css">
+
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script src="../js/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="../js/iview.min.js"></script>
+
+</head>
+<body>
+<div id="app">
+    <i-circle :percent="80">
+        <span class="demo-Circle-inner" style="font-size:24px">80%</span>
+    </i-circle>
+    <i-circle :percent="100" stroke-color="#5cb85c">
+        <icon type="ios-checkmark-empty" size="60" style="color:#5cb85c"></icon>
+    </i-circle>
+    <i-circle :percent="35" stroke-color="#ff5500">
+        <span class="demo-Circle-inner">
+            <icon type="ios-close-empty" size="50" style="color:#ff5500"></icon>
+        </span>
+    </i-circle>
+</div>
+
+</body>
+<script>
+
+    var Main = {
+
+    }
+
+    var Component = Vue.extend(Main)
+    new Component().$mount('#app')
+</script>
+</html>

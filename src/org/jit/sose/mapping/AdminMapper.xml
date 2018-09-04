@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jit.sose.mapper.AdminMapper">
+    <resultMap id="BaseResultMap" type="org.jit.sose.entity.Admin">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="adminNum" property="adminnum" jdbcType="VARCHAR"/>
+        <result column="adminName" property="adminname" jdbcType="VARCHAR"/>
+        <result column="adminIDCart" property="adminidcart" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    ID, adminNum, adminName, adminIDCart
+  </sql>
+
+    <update id="updateArchiveState" parameterType="int">
+        UPDATE archivesinfo SET state = 1 WHERE ID = #{archiveId}
+    </update>
+
+    <insert id="insertApprove" parameterType="org.jit.sose.entity.Approve">
+        INSERT INTO `approve` (`approver`, `archiveID`, `state`) VALUES (#{approver}, #{archiveID}, #{state})
+
+    </insert>
+    <select id="selectByNumAndName" resultMap="BaseResultMap">
+    select 
+    *
+    from admin
+    where adminName =  #{adminname,jdbcType=VARCHAR}
+    and adminNum = #{adminnum,jdbcType=VARCHAR}
+  </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from admin
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="org.jit.sose.entity.Admin">
+    insert into admin (ID, adminNum, adminName, 
+      adminIDCart)
+    values (#{id,jdbcType=INTEGER}, #{adminnum,jdbcType=VARCHAR}, #{adminname,jdbcType=VARCHAR}, 
+      #{adminidcart,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="org.jit.sose.entity.Admin">
+        insert into admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="adminnum != null">
+                adminNum,
+            </if>
+            <if test="adminname != null">
+                adminName,
+            </if>
+            <if test="adminidcart != null">
+                adminIDCart,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="adminnum != null">
+                #{adminnum,jdbcType=VARCHAR},
+            </if>
+            <if test="adminname != null">
+                #{adminname,jdbcType=VARCHAR},
+            </if>
+            <if test="adminidcart != null">
+                #{adminidcart,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.jit.sose.entity.Admin">
+        update admin
+        <set>
+            <if test="adminnum != null">
+                adminNum = #{adminnum,jdbcType=VARCHAR},
+            </if>
+            <if test="adminname != null">
+                adminName = #{adminname,jdbcType=VARCHAR},
+            </if>
+            <if test="adminidcart != null">
+                adminIDCart = #{adminidcart,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.jit.sose.entity.Admin">
+    update admin
+    set adminNum = #{adminnum,jdbcType=VARCHAR},
+      adminName = #{adminname,jdbcType=VARCHAR},
+      adminIDCart = #{adminidcart,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="getArchiveWaitMeApprove" parameterType="String" resultType="org.jit.sose.entity.ArchivesInfo">
+        SELECT * FROM archivesinfo WHERE classifyId in (SELECT classifyId FROM classifytree WHERE ID in( SELECT DISTINCT classifyID FROM classifyadmin WHERE adminID = #{adminId})) AND state = 0
+        
+    </select>
+</mapper>

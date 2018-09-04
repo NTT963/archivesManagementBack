@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="../css/iview.css">
+    <link rel="stylesheet" href="../css/ionicons.css">
+
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/iview.min.js"></script>
+    <script type="text/javascript" src="../js/callBackService.js"></script>
+    <script type="text/babel" src="../js/manageArchive.js"></script>
+
+
+</head>
+<body>
+<!-- 弹窗内容开始 -->
+<div id="app">
+
+    <div class="centerContext">
+        <div class="left">
+            <tree :data="treeData" :render="renderContent"></tree>
+        </div>
+        <div class="right">
+            <div><h3 style="color: #657180;margin-bottom: 10px">{{tableTitle}}</h3>
+                <i-table border :columns="columns" :data="nowData"
+                         no-data-text="请选择左侧目录"></i-table>
+                <modal v-model="modal" :title="modelTitle">
+                    <form style="margin-left: 10%;margin-right: 10%;margin-top: 15px" action="/archivesManagementBack/uploadFile//uploadArchive.do"
+                          target="id_iframe" method="POST" enctype="multipart/form-data">
+                        <input name="userId" v-model="userId" style="display:none;">
+                        <row>
+                            <i-col span="4"><h2 style="margin-top: 5px">分类：</h2></i-col>
+                            <i-col span="20">
+                                <Cascader name="path" :data="WXTreeData" v-model="cascaderData" trigger="hover" class="check-all"
+                                          @on-change="getKindData"></Cascader>
+                            </i-col>
+                        </row>
+                        <!--accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"-->
+                        <input type="file" @change="showPreview($event)"  name="file" id="file" multiple style="display: none"/>
+                        <div class="upload_warp_left" @click="fileClick" @drop="drop($event)" @dragenter="dragenter($event)"
+                             @dragover="dragover($event)">
+                            <img src="../img/upload.png"><br>
+                            <span v-if="imgList.length == 0">点击上传文件(word,pdf)</span>
+                            <span v-else>选中{{imgList.length}}个文件，共{{bytesToSize(this.size)}}</span>
+                        </div>
+                        <!--<tag type="dot" closable v-for="(item,index) of imgList" color="blue">{{item.file.name}}<br></tag>-->
+                        <ul>
+                            <li style="font-size: 15px" v-for="(item,index) of imgList">
+                                {{item.file.name}}
+                            </li>
+                        </ul>
+                        <div style="margin-top: 20px">
+                            <i-button size="large" html-type="submit"  type="success" long>上传档案</i-button>
+                        </div>
+                        <!--防止上传后表单页面跳转-->
+                        <iframe id="id_iframe" name="id_iframe" style="display:none;"></iframe>
+                    </form>
+                    <div slot="footer">
+                    </div>
+
+                </modal>
+                <br>
+                <div style="display: inline-flex;margin-left: 30%;">
+                    <!--<i-button class="tableOperation" @click="handleSelectAll(true)">全选</i-button>-->
+                    <!--<i-button class="tableOperation" @click="handleSelectAll(false)">取消全选</i-button>-->
+                    <!--<i-button class="tableOperation">删除选中</i-button>-->
+                    <i-button class="tableOperation" @click="addArchives">上传档案</i-button>
+                    <page :total="dataCount" show-elevator
+                          show-sizer @on-change="changePage"
+                          @on-page-size-change="pageSizeChange"
+                          :page-size-opts="pageSizeArray"></page>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    .upload_warp_img_div_del {
+        position: absolute;
+        top: 6px;
+        width: 16px;
+        right: 4px;
+    }
+
+    .upload_warp_img_div_top {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 30px;
+        background-color: rgba(0, 0, 0, 0.4);
+        line-height: 30px;
+        text-align: left;
+        color: #fff;
+        font-size: 12px;
+        text-indent: 4px;
+    }
+
+    .upload_warp_img_div_text {
+        white-space: nowrap;
+        width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .upload_warp_img_div img {
+        max-width: 100%;
+        max-height: 100%;
+        vertical-align: middle;
+    }
+
+    .upload_warp_img_div {
+        position: relative;
+        height: 100px;
+        width: 120px;
+        border: 1px solid #ccc;
+        margin: 0px 30px 10px 0px;
+        float: left;
+        line-height: 100px;
+        display: table-cell;
+        text-align: center;
+        background-color: #eee;
+        cursor: pointer;
+    }
+
+    .upload_warp_img {
+        border-top: 1px solid #D2D2D2;
+        padding: 14px 0 0 14px;
+        overflow: hidden
+    }
+
+    .upload_warp_text {
+        text-align: left;
+        margin-bottom: 10px;
+        padding-top: 10px;
+        text-indent: 14px;
+        border-top: 1px solid #ccc;
+        font-size: 14px;
+    }
+
+    .upload_warp_right {
+        float: left;
+        width: 57%;
+        margin-left: 2%;
+        height: 100%;
+        border: 1px dashed #2AB2FC;
+        border-radius: 4px;
+        line-height: 130px;
+        color: #999;
+    }
+
+    .upload_warp_left img {
+        margin-top: 20px;
+
+    }
+
+    .upload_warp_left {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+        border: 1px dashed #2AB2FC;
+        border-radius: 4px;
+        cursor: pointer;
+        background: white;
+        padding-bottom: 30px;
+    }
+
+    .upload_warp {
+        margin: 14px;
+        height: 130px;
+    }
+
+    .upload {
+        border: 1px solid #ccc;
+        background-color: #fff;
+        width: 650px;
+        box-shadow: 0px 1px 0px #ccc;
+        border-radius: 4px;
+    }
+
+    .tableOperation {
+        margin-right: 7px;
+    }
+
+    .centerContext {
+        /* border: solid 1px blue; */
+        position: absolute;
+        width: 100%;
+        bottom: 2px;
+        top: 2px;
+        /* text-align: center; */
+        /* color: #fff; */
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        z-index: -1;
+    }
+
+    .left {
+
+        padding: 20px;
+        border-radius: 15px;
+        border: solid 1px #dcdde1;
+        background: #f5f6fa;
+        width: 300px;
+        float: left;
+        height: 100%;
+        /* margin-bottom: 40px; */
+        overflow: auto;
+    }
+
+    .right {
+        padding: 20px;
+        border-radius: 15px;
+        border: solid 1px #dcdde1;
+        background: #f5f6fa;
+        /*text-align: center;*/
+        height: 100%;
+        overflow: auto;
+        margin-left: 320px;
+    }
+</style>
+
+</html>

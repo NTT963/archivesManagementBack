@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索</title>
+
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/callBackService.js"></script>
+</head>
+<body>
+<img src="../img/jitLogo1.png" style=" position: fixed;bottom: 40px;right: 40px;height: 150px">
+<div id="app">
+    <a href="#" id="open_btn">上传新模板</a>
+
+    <a href="FileExplorePage.html?param1=aa&param2=bb" target="_blank">页面跳转</a>
+    <div id="background" class="back">
+        <div id="div1" class="content headRadius footRadius">
+            <div id="close" class="headRadius">
+                <span id="close-button">×</span>
+                <h4>文档预览</h4>
+            </div>
+            <div id="div2">
+                <h3>弹窗标题</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iste, ullam, nisi, enim laboriosam ea cum necessitatibus ipsum cupiditate neque soluta qui autem odit eligendi blanditiis voluptatem repellat suscipit quia perspiciatis.</p>
+            </div>
+            <h3 id="foot" class="footRadius">底部内容</h3>
+        </div>
+    </div>
+
+    <!--<div style="margin-left: 30px;margin-bottom: 30px;margin-top: 10px;">-->
+        <!--<input class="searchInput" v-model="keyWord" placeholder="输入关键词检索档案" style="float:left;" @keyup.enter="query()">-->
+        <!--<button class="searchButton" @click="query()">搜索</button>-->
+    <!--</div>-->
+
+
+    <div style="margin-left: 30%;margin-bottom: 30px;margin-top: 10px">
+        <input class="searchInput" v-model="keyWord" placeholder="输入关键词检索档案" style="float:left;" @keyup.enter="query()">
+        <button class="searchButton" @click="query()">搜索</button>
+    </div>
+
+    <div style="margin-left: 30%">
+        <div  v-for="item of result" class="card">
+            <a href="FileExplorePage.html?param1=aa&param2=bb" style="text-decoration:none;font-size: 20px;color: #035391">{{item.archivesName}}</a>
+            <!--<a>金院教字【2017】23号——金陵科技学院实验教学实施细则.doc</a>-->
+            <p style="color:#5b6270;text-indent:2em;display: -webkit-box;-webkit-box-orient: vertical;-webkit-line-clamp: 4;overflow: hidden;">
+                {{item.content}}
+            </p>
+            <img src="../img/excel.png" style="position: absolute;z-index: 2;right: 15px;bottom: 15px; width: 40px;opacity:0.9;">
+        </div>
+    </div>
+
+</div>
+</body>
+<script>
+    var Main = {
+        data() {
+            return {
+                keyWord: "",
+                result: [],
+                centerSerch:true
+            }
+        },
+        mounted: function () {
+            console.log("执行")
+            var btn = document.getElementById('open_btn');
+            var div = document.getElementById('background');
+            var close = document.getElementById('close-button');
+
+            btn.onclick = function show() {
+                div.style.display = "block";
+            }
+
+            close.onclick = function close() {
+                div.style.display = "none";
+            }
+
+            window.onclick = function close(e) {
+                if (e.target == div) {
+                    div.style.display = "none";
+                }
+            }
+            // 向后台发送请求所有节点数据，并对data初始化
+
+        },
+        methods: {
+            query() {
+                console.log("输入的值为" + this.keyWord)
+                callAxiosGetNoParams("/archivesManagementBack/queryArchive.do?keyWord="+this.keyWord, this.querySuccess, this.queryFailed)
+            },
+            querySuccess(data){
+                this.result = data.archiveList
+                console.log(JSON.stringify(data))
+
+            },
+            queryFailed(data){
+
+            }
+        }
+    }
+
+    var Component = Vue.extend(Main)
+    new Component().$mount('#app')
+
+
+</script>
+<style>
+
+    #background {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100px;
+        background-color: rgba(0, 0, 0, 0.5);
+        /*background-color: red;*/
+    }
+
+    .headRadius {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .footRadius {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    #div1 {
+        z-index: 55;
+        background: #eeeeee;
+        width: 70%;
+        height: 100%;
+        margin-left: 20%;
+        overflow: auto;
+    }
+
+    span {
+        color: white;
+        padding-top: 12px;
+        cursor: pointer;
+        padding-right: 15px;
+    }
+
+    #div2 {
+        background: #eeeeee;
+        margin: auto;
+        height: 100%;
+        padding: 0 20px;
+    }
+
+    #close {
+        padding: 5px;
+        background: #55acee;
+    }
+
+    #close-button {
+        float: right;
+        font-size: 30px;
+    }
+
+    #foot {
+        padding: 5px 0;
+        text-align: center;
+        background: #55acee;
+        color: white;
+    }
+    .searchInput {
+        border: 3px solid #035391;
+        padding: 5px;
+        height: 35px;
+        width: 600px;
+        border-radius: 5px 0px 0px 5px;
+        outline: none;
+        color: #9DBFF;
+        font-size: 20px;
+    }
+
+    .searchButton {
+        width: 90px;
+        height: 51px;
+        border: 1px solid #035391;
+        background: #035391;
+        text-align: center;
+        color: #fff;
+        border-radius: 0px 5px 5px 0px;
+        /*border-radius: 5px;*/
+        cursor: pointer;
+        font-size: 25px;
+    }
+
+    .searchInput:focus {
+        color: #035391;
+    }
+
+    .card {
+        position: relative;z-index: 1;
+        width: 680px;
+        height: auto;
+        background: #fff;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 20px;
+        transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        box-shadow: 2px 3px 4px 2px rgba(0.19, 0.19, 0.19, 0.19);
+    }
+</style>
+</html>

@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="archivesManagementBack">
+    <output-path>$PROJECT_DIR$/out/artifacts/archivesManagementBack</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="archivesManagementBack" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="module" name="junit4" module-name="archivesManagementBack" />
+          <element id="library" level="project" name="ssmlib" />
+          <element id="library" level="project" name="commons-collections4-4.0" />
+          <element id="library" level="project" name="jstl-1.2" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="archivesManagementBack/web/Web" />
+    </root>
+  </artifact>
+</component>

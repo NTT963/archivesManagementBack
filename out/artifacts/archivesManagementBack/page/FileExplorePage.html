@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>档案预览</title>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+</head>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+    }
+</style>
+<body style="overflow: hidden">
+<img src="../img/jitLogo1.png" style=" position: fixed;bottom: 100px;right: 5%;height: 30%;z-index: 11">
+<div style="position: fixed;top: 0;left:0;width: 99%;height: 6%; background: #035391">
+    <img src="../img/jitamslogo.png" style="height: 100%;margin-left: 2%;">
+</div>
+<!--width: 60%;-->
+<iframe name="toppage" class='parentdiv' id="iframepart" style="z-index:10;height: 100%;width: 100%;"
+        frameborder="no" src=""></iframe>
+<!--src="/archive/JXB/JXB02/test/软件工程专业卓越工程师教育培养方案文字说明.pdf"-->
+
+<!--<div style="width: 60%;height: 95%;margin-left: 20%">-->
+<!--</div>-->
+
+
+<script type="text/javascript">
+    function getParams(key) {
+        $(document).ready(function () {
+            if (window.parent != window) {
+                parent.document.getElementById("iframepart").style.height = (document.body.scrollHeight + 30) + "px";
+            }
+        });
+        var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        }
+
+        return null;
+    };
+
+    var searchUrl =window.location.href;
+    var searchData =searchUrl.split("=");        //截取 url中的“=”,获得“=”后面的参数
+    var  searchText =decodeURI(searchData[1]);
+    console.log(searchText)
+    console.log("参数param1:" + decodeURI(getParams("url")));//输出aa
+    $("#iframepart").attr('src',searchText);
+
+    // console.log("参数param2:" + getParams("param2"));//输出bb
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jit.sose.mapper.IArchivesMapper">
+    <select id="getApproveByUserId" parameterType="String" resultType="org.jit.sose.entity.Approve">
+        SELECT * FROM approve WHERE applicant = #{userId}
+    </select>
+
+    <select id="getAllArchives" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
+        SELECT * FROM archivesinfo
+    </select>
+    <select id="getArchivesByClassifyId" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
+        SELECT * FROM archivesinfo WHERE classifyId = #{classifyId}
+    </select>
+
+    <insert id="insertArchive" parameterType="org.jit.sose.entity.ArchivesInfo" useGeneratedKeys="true" keyProperty="ID"
+            keyColumn="ID">
+        INSERT INTO `archivesinfo` (`classifyId`, `archivesId`, `archivesName`,`content`,`url`,`state`, `uploadTime`, `uploadUserId`)
+        VALUES (#{classifyId}, #{archivesId}, #{archivesName}, #{content},  #{url}, #{state},#{uploadTime},#{uploadUserId})
+    </insert>
+
+    <select id="queryArchives" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
+        SELECT ID,classifyId,archivesId,archivesName,CONCAT(LEFT(content,100),'......') AS content,url,state FROM archivesinfo WHERE content LIKE CONCAT('%',#{keyWord},'%')
+    </select>
+
+    <!--ID	userID	archiveName	url	saveTime-->
+
+    <insert id="insertArchiveSave" parameterType="org.jit.sose.entity.ArchiveSave">
+        INSERT INTO `archiveSave` (`userID`, `archiveName`, `url`) VALUES (#{userID}, #{archiveName}, #{url})
+    </insert>
+
+    <select id="getArchiveSaves" parameterType="string" resultType="org.jit.sose.entity.ArchiveSave">
+      SELECT * FROM archiveSave WHERE userID = #{userId}
+    </select>
+
+
+</mapper>

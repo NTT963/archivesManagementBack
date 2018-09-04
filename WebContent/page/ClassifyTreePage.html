@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>档案管理系统</title>
+<link rel="stylesheet" href="../css/iview.css">
+<link rel="stylesheet" href="../css/ionicons.css">
+<link rel="stylesheet" href="../css/ClassifyTreePage.css">
+<!--引入js-->
+<!--解决axios在ie和手机上的兼容性问题-->
+<script type="text/javascript" src="../js/polyfill.min.js"></script>
+<script type="text/javascript" src="../js/babel.min.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript" src="../js/iview.min.js"></script>
+<script type="text/javascript" src="../js/callBackService.js"></script>
+<script type="text/babel" src="../js/classifyTreePage.js"></script>
+</head>
+<body>
+	<div id="app">
+		<i-button type="warning" size="small" icon="android-add"
+			@click="addRoot">添加根节点</i-button>
+
+		<tree :data="treeData" :render="renderContent"></tree>
+
+		<!--新建目录弹窗-->
+		<modal v-model="modalAdd" title="新建目录" @on-ok="modelAddOK"
+			   ok-text="确认添加" cancel-text="取消">
+			<i-form :model="formItem" :label-width="80">
+				<form-item label="目录编号:">
+					<i-input v-model="formItem.classifyId" placeholder="例如：JXT01"></i-input>
+				</form-item>
+				<form-item label="目录名称:">
+					<i-input v-model="formItem.title"  placeholder="例如：图书资料（含期刊、教学参考书、光碟等）"></i-input>
+				</form-item>
+				<form-item label="分管领导:">
+					<poptip placement="bottom">
+                        <tag v-for="item1 in admin1" type="dot" closable @on-close="handleClose1" color="red">{{item1}}</tag>
+                        <i-button icon="ios-plus-empty" type="dashed">添加分管领导</i-button>
+                        <!--@click="handleAdd"-->
+						<div class="api" slot="content">
+							<i-select v-model="admin1" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+								<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+							</i-select>
+						</div>
+					</poptip>
+				</form-item>
+				<form-item  label="责任人:"><poptip placement="bottom">
+                    <tag v-for="item1 in admin2" type="dot" closable @on-close="handleClose2" color="yellow">{{item1}}</tag>
+                    <i-button icon="ios-plus-empty" type="dashed">添加责任人</i-button>
+                    <div class="api" slot="content">
+                        <i-select v-model="admin2" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+                            <i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                        </i-select>
+                    </div>
+                </poptip>
+				</form-item>
+				<form-item  label="协助人:"><poptip placement="bottom">
+                    <tag v-for="item1 in admin3" type="dot" closable @on-close="handleClose3" color="blue">{{item1}}</tag>
+                    <i-button icon="ios-plus-empty" type="dashed">添加协助人</i-button>
+                    <!--@click="handleAdd"-->
+                    <div class="api" slot="content">
+                        <i-select v-model="admin3" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+                            <i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+                        </i-select>
+                        <!--<i-button type="success" size="small" icon="android-add"-->
+                        <!--@click="addRoot">添加根节点</i-button>-->
+                    </div>
+                </poptip>
+				</form-item>
+			</i-form>
+		</modal>
+
+		<!--目录详情弹窗-->
+		<modal v-model="modalDetail" title="目录详情" @on-ok="modelDetailOK"
+			   ok-text="确认" cancel-text="取消">
+			<i-form :model="formItem" :label-width="80">
+				<form-item label="目录编号:"> <span class="formSpan">{{formItem.classifyId}}</span> </form-item>
+				<form-item label="目录名称:"> <span class="formSpan">{{formItem.title}}</span> </form-item>
+				<form-item label="分管领导:">
+					<tag v-for="item1 in formItem.admin['1']" type="dot" color="red">{{item1.staffName+' '+item1.adminID}}</tag>
+				</form-item>
+				<form-item  label="责任人:">
+					<tag v-for="item2 in formItem.admin['2']" type="dot" color="yellow">{{item2.staffName+' '+item2.adminID}}</tag>
+				</form-item>
+				<form-item  label="协助人:">
+					<tag v-for="item3 in formItem.admin['3']" type="dot" color="blue">{{item3.staffName+' '+item3.adminID}}</tag>
+				</form-item>
+			</i-form>
+		</modal>
+
+		<!--修改目录信息-->
+		<modal width="600" v-model="modalEdit" title="修改目录信息" @on-ok="modelEditOK"
+			ok-text="确认" cancel-text="取消">
+			<i-form :model="formItem" :label-width="80">
+				<form-item label="目录编号:">
+					<i-input v-model="formItem.classifyId" placeholder="例如：JXT01"></i-input>
+				</form-item>
+				<form-item label="目录名称:">
+					<i-input v-model="formItem.title"  placeholder="例如：图书资料（含期刊、教学参考书、光碟等）"></i-input>
+				</form-item>
+
+				<form-item label="分管领导:">
+					<tag v-for="item1 in formItem.admin['1']" :name="item1.adminID" type="dot" closable  @on-close="tagClosePre" color="red">{{item1.staffName+' '+item1.adminID}}</tag>
+					<poptip placement="bottom">
+						<tag v-for="item1 in admin1" type="dot" :name="item1" closable @on-close="tagCloseExtra" color="red">{{item1}}</tag>
+						<i-button icon="ios-plus-empty" type="dashed">添加分管领导</i-button>
+						<!--@click="handleAdd"-->
+						<div class="api" slot="content">
+							<i-select v-model="admin1" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+								<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+							</i-select>
+						</div>
+					</poptip>
+				</form-item>
+
+				<form-item  label="责任人:">
+					<tag v-for="item2 in formItem.admin['2']" type="dot" color="yellow">{{item2.staffName+' '+item2.adminID}}</tag>
+					<poptip placement="bottom">
+						<tag v-for="item1 in admin2" type="dot" closable @on-close="handleClose2" color="yellow">{{item1}}</tag>
+						<i-button icon="ios-plus-empty" type="dashed">添加责任人</i-button>
+						<div class="api" slot="content">
+							<i-select v-model="admin2" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+								<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+							</i-select>
+						</div>
+					</poptip>
+				</form-item>
+				<form-item  label="协助人:">
+					<tag v-for="item3 in formItem.admin['3']" type="dot" color="blue">{{item3.staffName+' '+item3.adminID}}</tag>
+					<poptip placement="bottom">
+						<tag v-for="item1 in admin3" type="dot" closable @on-close="handleClose3" color="blue">{{item1}}</tag>
+						<i-button icon="ios-plus-empty" type="dashed">添加协助人</i-button>
+						<!--@click="handleAdd"-->
+						<div class="api" slot="content">
+							<i-select v-model="admin3" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">
+								<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>
+							</i-select>
+							<!--<i-button type="success" size="small" icon="android-add"-->
+							<!--@click="addRoot">添加根节点</i-button>-->
+						</div>
+					</poptip>
+				</form-item>
+			</i-form>
+			<!--<i-form :model="formItem" :label-width="80">-->
+				<!--<form-item label="目录编号:">-->
+					<!--<i-input v-model="formItem.classifyId" placeholder="例如：JXT01"></i-input>-->
+				<!--</form-item>-->
+				<!--<form-item label="目录名称:">-->
+					<!--<i-input v-model="formItem.title"  placeholder="例如：图书资料（含期刊、教学参考书、光碟等）"></i-input>-->
+				<!--</form-item>-->
+
+				<!--<form-item label="分管领导:">-->
+					<!--<poptip placement="bottom">-->
+						<!--<tag v-for="item1 in formItem.admin['1']" type="dot" color="red">{{item1.staffName+' '+item1.adminID}}</tag>-->
+						<!--<tag v-for="item1 in admin1" type="dot" closable @on-close="handleClose1" color="red">{{item1}}</tag>-->
+						<!--<i-button icon="ios-plus-empty" type="dashed">添加分管领导</i-button>-->
+						<!--&lt;!&ndash;@click="handleAdd"&ndash;&gt;-->
+						<!--<div class="api" slot="content">-->
+							<!--<i-select v-model="admin1" @on-change="" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">-->
+								<!--<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>-->
+							<!--</i-select>-->
+						<!--</div>-->
+					<!--</poptip>-->
+				<!--</form-item>-->
+				<!--<form-item  label="责任人:"><poptip placement="bottom">-->
+					<!--<tag v-for="item2 in formItem.admin['2']" type="dot" color="yellow">{{item2.staffName+' '+item2.adminID}}</tag>-->
+					<!--<tag v-for="item1 in admin2" type="dot" closable @on-close="handleClose2" color="yellow">{{item1.staffName}}</tag>-->
+					<!--<i-button icon="ios-plus-empty" type="dashed">添加责任人</i-button>-->
+					<!--<div class="api" slot="content">-->
+						<!--<i-select v-model="admin2" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">-->
+							<!--<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>-->
+						<!--</i-select>-->
+					<!--</div>-->
+				<!--</poptip>-->
+				<!--</form-item>-->
+				<!--<form-item  label="协助人:"><poptip placement="bottom">-->
+					<!--<tag v-for="item3 in formItem.admin['3']" type="dot" color="blue">{{item3.staffName+' '+item3.adminID}}</tag>-->
+					<!--<tag v-for="item1 in admin3" type="dot" closable @on-close="handleClose3" color="blue">{{item1.staffName}}</tag>-->
+					<!--<i-button icon="ios-plus-empty" type="dashed">添加协助人</i-button>-->
+					<!--&lt;!&ndash;@click="handleAdd"&ndash;&gt;-->
+					<!--<div class="api" slot="content">-->
+						<!--<i-select v-model="admin3" placeholder="输入工号或姓名检索" filterable multiple style="width:260px">-->
+							<!--<i-option v-for="item in teacherList" :value="item.value" :key="item.value">{{ item.label }}</i-option>-->
+						<!--</i-select>-->
+						<!--&lt;!&ndash;<i-button type="success" size="small" icon="android-add"&ndash;&gt;-->
+						<!--&lt;!&ndash;@click="addRoot">添加根节点</i-button>&ndash;&gt;-->
+					<!--</div>-->
+				<!--</poptip>-->
+				<!--</form-item>-->
+			<!--</i-form>-->
+		</modal>
+
+	</div>
+</body>
+</html>

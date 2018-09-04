@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>用户报表</title>
+<link rel="stylesheet" href="../css/iview.css">
+<link rel="stylesheet" href="../css/ionicons.css">
+
+<!--引入js-->
+<!--解决axios在ie和手机上的兼容性问题-->
+<script type="text/javascript" src="../js/polyfill.min.js"></script>
+<script type="text/javascript" src="../js/babel.min.js"></script>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript" src="../js/iview.min.js"></script>
+<script type="text/javascript" src="../js/callBackService.js"></script>
+<script type="text/javascript" src="../js/noticePage.js"></script>
+</head>
+<body>
+	<div id="app1">
+		<i-button type="info" @click="addNotice">发布新的通知</i-button>
+		<i-table border :columns="noticeColumns" :data="noticeData"></i-table>
+		<page :total="100" show-sizer show-elevator></page>
+		<!--  
+		<modal v-model="modal" :title="modelTitle" @on-ok="modelOK"
+			ok-text="确认" cancel-text="取消"> <i-form :model="formItem"
+			:label-width="80"> <form-item label="通知标题:"> <i-input
+			v-model="formItem.noticeTitle" placeholder="例如：关于XX的通知"></i-input> </form-item> <form-item
+			label="通知内容:"> <i-input v-model="formItem.noticeContent"
+			placeholder="例如：图书资料（含期刊、教学参考书、光碟等）"></i-input> </form-item> <form-item
+			label="显示顺序:"> <i-input v-model="formItem.noticeOrder"
+			placeholder="填写阿拉伯数字"></i-input> </form-item> </i-form> </modal>
+			-->
+	</div>
+
+</body>
+</html>

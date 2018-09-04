@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jit.sose.mapper.IWXConfigMapper">
+    <resultMap id="bannerPic" type="org.jit.sose.entity.BannerPic">
+        <!--<id column="ID" property="ID"/>-->
+        <!--<result column="title" property="title"/>-->
+        <result column="url" property="url"/>
+        <!--<result column="picOrder" property="picOrder"/>-->
+        <!--<result column="state" property="state"/>-->
+        <!--<result column="remark" property="remark"/>-->
+    </resultMap>
+    
+    <resultMap id="icon" type="org.jit.sose.entity.IconInfo">
+        <!--<id column="ID" property="ID"/>-->
+        <result column="iconTitle" property="iconTitle"/>
+        <result column="iconPicUrl" property="iconPicUrl"/>
+        <result column="navPath" property="navPath"/>
+    </resultMap>
+    
+    <resultMap id="notice" type="org.jit.sose.entity.Notice">
+    	<id column="ID" property="ID"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="creatTime" property="creatTime"/>
+        <result column="state" property="state"/>
+        <result column="noticeOrder" property="noticeOrder"/>
+        <result column="remark" property="remark"/>
+        <result column="role" property="role"/>
+    </resultMap>
+    
+    
+
+
+
+    <select id="getBannerPics" resultMap="bannerPic">
+        SELECT url FROM wx_CarouselPic WHERE state = 1 order by picOrder
+    </select>
+    
+    <select id="getNotice" resultMap="notice">
+    	SELECT ID,title,content,creatTime,state,noticeOrder,remark,role FROM wx_Notice WHERE role = #{role}
+    </select>
+    
+    <select id="getIcon"  resultMap="icon">
+    	SELECT iconTitle,iconPicUrl,navPath FROM wx_PageConfig WHERE page= #{page}
+    	 AND roleID = #{role}  ORDER BY iconOrder
+    </select>
+
+    <select id="getOpenIdCount" parameterType="String" resultType="int">
+        select count(*) from wx_User where openID = #{openID}  AND userID!=''
+    </select>
+
+    <select id="insertOpenIDAndUserId" parameterType="String">
+        INSERT INTO wx_User (openID,userID) VALUES (#{arg0} , #{arg1})
+    </select>
+
+
+</mapper>

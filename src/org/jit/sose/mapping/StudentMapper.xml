@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jit.sose.mapper.StudentMapper" >
+  <resultMap id="BaseResultMap" type="org.jit.sose.entity.Student" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="stuNum" property="stunum" jdbcType="VARCHAR" />
+    <result column="stuIDCard" property="stuidcard" jdbcType="VARCHAR" />
+    <result column="stuClass" property="stuclass" jdbcType="VARCHAR" />
+    <result column="stuName" property="stuname" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, stuNum, stuIDCard, stuClass, stuName, sex
+  </sql>
+
+  <select id="selectBystuNum" resultType="org.jit.sose.entity.Student">
+    select
+    <include refid="Base_Column_List" />
+    from student
+    where stuNum = #{stunum,jdbcType=VARCHAR}
+  </select>
+
+
+
+   <select id="selectByNumAndName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from student
+    where stuName = #{stuname,jdbcType=VARCHAR}
+    and stuNum = #{stunum,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from student
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from student
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="org.jit.sose.entity.Student" >
+    insert into student (ID, stuNum, stuIDCard, 
+      stuClass, stuName, sex
+      )
+    values (#{id,jdbcType=INTEGER}, #{stunum,jdbcType=VARCHAR}, #{stuidcard,jdbcType=VARCHAR}, 
+      #{stuclass,jdbcType=VARCHAR}, #{stuname,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.jit.sose.entity.Student" >
+    insert into student
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="stunum != null" >
+        stuNum,
+      </if>
+      <if test="stuidcard != null" >
+        stuIDCard,
+      </if>
+      <if test="stuclass != null" >
+        stuClass,
+      </if>
+      <if test="stuname != null" >
+        stuName,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="stunum != null" >
+        #{stunum,jdbcType=VARCHAR},
+      </if>
+      <if test="stuidcard != null" >
+        #{stuidcard,jdbcType=VARCHAR},
+      </if>
+      <if test="stuclass != null" >
+        #{stuclass,jdbcType=VARCHAR},
+      </if>
+      <if test="stuname != null" >
+        #{stuname,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.jit.sose.entity.Student" >
+    update student
+    <set >
+      <if test="stunum != null" >
+        stuNum = #{stunum,jdbcType=VARCHAR},
+      </if>
+      <if test="stuidcard != null" >
+        stuIDCard = #{stuidcard,jdbcType=VARCHAR},
+      </if>
+      <if test="stuclass != null" >
+        stuClass = #{stuclass,jdbcType=VARCHAR},
+      </if>
+      <if test="stuname != null" >
+        stuName = #{stuname,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.jit.sose.entity.Student" >
+    update student
+    set stuNum = #{stunum,jdbcType=VARCHAR},
+      stuIDCard = #{stuidcard,jdbcType=VARCHAR},
+      stuClass = #{stuclass,jdbcType=VARCHAR},
+      stuName = #{stuname,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

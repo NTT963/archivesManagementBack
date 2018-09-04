@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>软件学院档案管理系统</title>
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/callBackService.js"></script>
+    <script type="text/babel" src="../js/userPage.js"></script>
+
+
+</head>
+<body style="background: #F4F5FE">
+<div id="app">
+    <div style="height: auto;width: 100%;background: #035391">
+        <img src="../img/jitamslogo.png" style="height: 70px;margin-left: 2%;">
+
+        <div style="height: 50px;width: 200px;float: right;margin-right: 5%;padding-top: 25px">
+            <span style="color: white;font-weight: bold;font-size: 16px">{{userInfo.userID}} | {{userInfo.userName}}</span>
+        </div>
+    </div>
+    <div class="centerContext">
+        <div class="leftMenu">
+            <div id="sidebar">
+                <ul>
+
+                    <li><a v-bind:class="{ulActivae: sideActive['MyArchive.html']}" @click="changeIframeURL('MyArchive.html')">我的档案</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['Search.html']}" @click="changeIframeURL('Search.html')">档案检索</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['WaitMeApprove.html']}" @click="changeIframeURL('WaitMeApprove.html')">待我审批</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['UserManage.html']}" @click="changeIframeURL('UserManage.html')">用户管理</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['ClassifyTreePage.html']}" @click="changeIframeURL('ClassifyTreePage.html')">档案目录</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['ManageArchivePage.html']}" @click="changeIframeURL('ManageArchivePage.html')">档案管理</a></li>
+                    <!--<li><a v-bind:class="{ulActivae: sideActive['MyArchive.html']}" href="#">档案借还</a></li>-->
+                    <li><a v-bind:class="{ulActivae: sideActive['UploadArchivePage.html']}" @click="changeIframeURL('UploadArchivePage.html')">档案上传</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['ArchiveModel.html']}" @click="changeIframeURL('ArchiveModel.html')">模板下载</a></li>
+                    <li><a v-bind:class="{ulActivae: sideActive['ArchiveChart.html']}" @click="changeIframeURL('ArchiveChart.html')">档案报表</a></li>
+                </ul>
+            </div>
+        </div>
+        <!--width=100% height= auto-->
+        <div class="right">
+            <iframe name="toppage" style="width: 100%;height: 100%" frameborder="no"
+                    v-bind:src="tab"></iframe>
+        </div>
+
+        <!--<div class="left">-->
+        <!--<tree :data="treeData" :render="renderContent"></tree>-->
+        <!--</div>-->
+        <!--<div class="right">-->
+        <!--<div><h2 style="color: #657180">{{tableTitle}}</h2>-->
+        <!--<i-table border ref="selection" :columns="columns" :data="nowData"-->
+        <!--height="650" no-data-text="请选择左侧目录"></i-table>-->
+        <!--<modal v-model="modal" :title="modelTitle" @on-ok="modelOK"-->
+        <!--ok-text="新建档案" cancel-text="取消"> <i-form :model="formItem"-->
+        <!--:label-width="80"> <form-item label="档案编号"> <i-input-->
+        <!--v-model="formItem.archivesId"> <span slot="prepend">{{classifyId}}</span>-->
+        <!--</i-input> </form-item> <form-item label="档案名"> <i-input-->
+        <!--v-model="formItem.archivesName" placeholder="例如：2017届软件工程专业培养计划"></i-input>-->
+        <!--</form-item> <form-item label="档案等级"> <i-select-->
+        <!--v-model="formItem.authority"> <i-option value="1">1级</i-option>-->
+        <!--<i-option value="2">2级</i-option> <i-option value="3">3级</i-option>-->
+        <!--<i-option value="4">4级</i-option> <i-option value="5">5级</i-option>-->
+        <!--</i-select> </form-item> <form-item label="档案文件"> <Upload multiple type="drag"-->
+        <!--action="//jsonplaceholder.typicode.com/posts/">-->
+        <!--<div style="padding: 20px 0">-->
+        <!--<Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>-->
+        <!--<p>点击或者拖拽文件</p>-->
+        <!--</div>-->
+        <!--</Upload> </form-item> </i-form> </modal>-->
+        <!--<br>-->
+        <!--<div style="display: inline-flex">-->
+        <!--<i-button class="tableOperation" @click="handleSelectAll(true)">全选</i-button>-->
+        <!--<i-button class="tableOperation" @click="handleSelectAll(false)">取消全选</i-button>-->
+        <!--<i-button class="tableOperation">删除选中</i-button>-->
+        <!--<i-button class="tableOperation" @click="addArchives">新增档案</i-button>-->
+        <!--<page :total="dataCount" show-elevator-->
+        <!--show-sizer @on-change="changePage"-->
+        <!--@on-page-size-change="pageSizeChange"-->
+        <!--:page-size-opts="pageSizeArray"></page>-->
+        <!--</div></div>-->
+        <!--</div>-->
+    </div>
+</div>
+</body>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    #sidebar {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        bottom: 0;
+        width: 150px;
+        background: #035391;
+        background: -webkit-linear-gradient(#035391, #FF7349); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(#035391, #FF7349); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(#035391, #FF7349); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(#035391, #FF7349); /* Standard syntax */
+        padding: 20px 0;
+    }
+
+    #sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #sidebar ul a {
+        display: inline-block;
+        padding-top: 10px;
+        padding-left: 25%;
+        padding-bottom: 10px;
+        text-decoration: none;
+        color: #fff;
+        width: 78%;
+        font-size: 20px;
+    }
+
+    /*#sidebar ul a:hover {*/
+        /*background: #3397F2;*/
+    /*}*/
+
+    /*#sidebar ul a:active {*/
+        /*background: #3397F2;*/
+    /*}*/
+
+    .ulActivae{
+        background: #3397F2;
+    }
+
+    .tableOperation {
+        margin-right: 7px;
+    }
+
+    #app {
+        width: 100%;
+        height: 100%;
+        /*background: #00a8ff;*/
+        /*background-color: rgba(75,202,255,0.1);*/
+    }
+
+    .centerContext {
+        /* border: solid 1px blue; */
+        /*position: absolute;*/
+        /*width: 100%;*/
+        /*bottom: 0;*/
+        /*top: 70px;*/
+        /*!* text-align: center; *!*/
+        /*!* color: #fff; *!*/
+        /*left: 0;*/
+        /*right: 0;*/
+        height: 85%;
+        width: 100%;
+        margin: 0 auto;
+        z-index: -1;
+    }
+
+    .leftMenu {
+
+        border: solid 1px #dcdde1;
+        /*background: #f5f6fa;*/
+        background: red;
+        width: auto;
+        float: left;
+        height: 100%;
+        /* margin-bottom: 40px; */
+        overflow: auto;
+    }
+
+    .right {
+        padding: 20px;
+        border-radius: 10px;
+        border: solid 1px #dcdde1;
+        background: white;
+        text-align: center;
+        height: 95%;
+        /*overflow: auto;*/
+        margin-left: 180px;
+        margin-right: 30px;
+        margin-top: 30px;
+    }
+</style>
+
+</html>

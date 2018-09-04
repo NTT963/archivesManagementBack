@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jit.sose.mapper.StaffMapper" >
+  <resultMap id="BaseResultMap" type="org.jit.sose.entity.Staff" >
+    <id column="loginName" property="loginName" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="roleID" property="roleId" jdbcType="TINYINT" />
+    <result column="organizationID" property="organizationId" jdbcType="TINYINT" />
+    <result column="departmentID" property="departmentId" jdbcType="VARCHAR" />
+    <result column="staffName" property="staffName" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="CHAR" />
+    <result column="stateTime" property="stateTime" jdbcType="TIMESTAMP" />
+    <result column="IS_LOCKED" property="isLocked" jdbcType="CHAR" />
+    <result column="loginFailedTimes" property="loginFailedTimes" jdbcType="INTEGER" />
+    <result column="IS_LOGIN" property="isLogin" jdbcType="CHAR" />
+    <result column="LAST_ACTIVE_TIME" property="lastActiveTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    loginName, password, roleID, organizationID, departmentID, staffName, phone, email, 
+    createTime, state, stateTime, IS_LOCKED, loginFailedTimes, IS_LOGIN, LAST_ACTIVE_TIME
+  </sql>
+  
+  <select id="findLogin" resultMap="BaseResultMap" parameterType="org.jit.sose.entity.Staff" >
+    select 
+    <include refid="Base_Column_List" />
+    from staff
+    where loginName = #{loginName,jdbcType=VARCHAR} and password=#{password,jdbcType=VARCHAR}
+  </select>
+  <!-- 查询用户名是否存在 -->
+  <select id="getByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select 
+    <include refid="Base_Column_List" />
+    from staff
+    where loginName = #{param,jdbcType=VARCHAR}
+  </select>
+  <!-- 设置登录失败次数 -->
+  <update id="setLoginFailedTimes" parameterType="org.jit.sose.entity.Staff">
+  	update staff
+  	set loginFailedTimes=#{loginFailedTimes}
+  	where loginName=#{loginName}
+  </update>
+  <!-- 设置账号锁定 -->
+  <update id="setLocked" parameterType="java.lang.String">
+  	update staff
+  	set IS_LOCKED="Y"
+  	where loginName = #{param,jdbcType=VARCHAR}
+  </update>
+  <!-- 重置登录失败次数 -->
+  <update id="resetLoginFailedTimes" parameterType="java.lang.String">
+  	update staff
+  	set loginFailedTimes=0
+  	where loginName = #{param,jdbcType=VARCHAR}
+  </update>
+  <!-- 重置密码、锁定状态、失败次数 -->
+  <update id="resetPassword" parameterType="org.jit.sose.entity.Staff">
+  	update staff
+  	set loginFailedTimes=0,IS_LOCKED="N",password=#{password,jdbcType=VARCHAR}
+  	where loginName = #{loginName,jdbcType=VARCHAR} and phone=#{phone,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="insertStaff" parameterType="org.jit.sose.entity.Staff">
+  	insert into staff 
+  	<!-- <include refid="Base_Column_List"/> -->
+  	(loginName, password, roleID, organizationID, departmentID, staffName,
+  	 phone, email, createTime, state, stateTime,
+  	 IS_LOCKED, loginFailedTimes, IS_LOGIN, LAST_ACTIVE_TIME)
+  	values(#{loginName,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},1,1,'a','学生',
+  	#{phone,jdbcType=VARCHAR},'10086@qq.com','2016-04-12 14:10:53','1','2017-05-23 14:12:04',
+  	'N',0,'0','2018-04-16 14:12:42')
+  	<!-- (loginName, password, phone)
+  	values(#{loginName,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR}) -->
+  </insert>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
