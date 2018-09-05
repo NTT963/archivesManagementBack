@@ -10,7 +10,7 @@
         SELECT * FROM archivesinfo
     </select>
     <select id="getArchivesByClassifyId" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
-        SELECT * FROM archivesinfo WHERE classifyId = #{classifyId}
+        SELECT * FROM archivesinfo WHERE classifyId = #{classifyId} AND state = 1
     </select>
 
     <insert id="insertArchive" parameterType="org.jit.sose.entity.ArchivesInfo" useGeneratedKeys="true" keyProperty="ID"
@@ -20,7 +20,7 @@
     </insert>
 
     <select id="queryArchives" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
-        SELECT ID,classifyId,archivesId,archivesName,CONCAT(LEFT(content,100),'......') AS content,url,state FROM archivesinfo WHERE content LIKE CONCAT('%',#{keyWord},'%')
+        SELECT ID,classifyId,archivesId,archivesName,CONCAT(LEFT(content,100),'......') AS content,url,state FROM archivesinfo WHERE content LIKE CONCAT('%',#{keyWord},'%') AND state = 1
     </select>
 
     <!--ID	userID	archiveName	url	saveTime-->

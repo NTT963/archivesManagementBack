@@ -26,16 +26,16 @@
 		</property>
 	</bean>
 
-	<bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-		<property name="locations">
-			<list>
-				<value>classpath:java.properties</value>
-			</list>
-		</property>
-	</bean>
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
-		<property name="properties" ref="configProperties" />
-	</bean>
+	<!--<bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">-->
+		<!--<property name="locations">-->
+			<!--<list>-->
+				<!--<value>classpath:java.properties</value>-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+	<!--<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">-->
+		<!--<property name="properties" ref="configProperties" />-->
+	<!--</bean>-->
 
 
 	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->

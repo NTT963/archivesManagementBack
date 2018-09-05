@@ -17,6 +17,8 @@
 	<bean id="SpringApplicationContext" class="org.jit.sose.utils.SpringUtil"></bean>
 	<context:component-scan base-package="org.jit.sose.service.impl" />
 
+	<context:property-placeholder location="classpath:java.properties"/>
+
 	<!-- 1. 数据源 : DriverManagerDataSource -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
