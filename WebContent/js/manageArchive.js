@@ -60,6 +60,7 @@ var Main = {
                                 },
                                 on: {
                                     click: () => {
+                                    	this
                                         this.remove(params.index)
                                     }
                                 }
@@ -76,6 +77,7 @@ var Main = {
             nowData: [],
             loading: true,
             tableTitle: '请点选择左侧目录',
+            tableClassifyId: '',
             modal: false,
             formItem: {
                 archivesId: '',
@@ -88,7 +90,10 @@ var Main = {
             imgList: [],
             size: 0,
             userId: '',
-            cascaderData: ['JXB', 'JXB02']
+            cascaderData: [],
+            node: null,
+            num: 0,
+            array: []
         }
     },
     mounted: function () {
@@ -102,6 +107,24 @@ var Main = {
     */
     },
     methods: {
+        Toast(msg,duration){
+            duration=isNaN(duration)?3000:duration;
+            var m = document.createElement('div');
+            m.innerHTML = msg;
+            m.style.cssText="width: auto;padding: 20px 20px;min-width: 200px;opacity: 0.5;height: 70px;color: rgb(255, 255, 255);line-height: 30px;text-align: center;border-radius: 5px;position: fixed;top: 40%;left: 40%;z-index: 999999;background: rgb(0, 0, 0);font-size: 17px;";
+            document.body.appendChild(m);
+            setTimeout(function() {
+                var d = 0.5;
+                m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in';
+                m.style.opacity = '0';
+                setTimeout(function() { document.body.removeChild(m) }, d * 1000);
+            }, duration);
+        },
+    	load() {
+//            this.$Message.success('档案上传成功');
+            this.Toast('档案上传成功,等待管理员审核',1000)
+            this.modal = false
+        },
         fileClick() {
             document.getElementById('file').click()
         },
@@ -112,6 +135,98 @@ var Main = {
             } else {
                 return null;
             }
+        },
+        showPreview(el) {
+            console.log(el)
+            this.fileList(el.target);
+        },
+        fileClick() {
+            document.getElementById('file').click()
+        },
+        fileChange(el) {
+            if (!el.target.files[0].size) return;
+            this.fileList(el.target);
+            el.target.value = ''
+        },
+        fileList(fileList) {
+            let files = fileList.files;
+            for (let i = 0; i < files.length; i++) {
+                //判断是否为文件夹
+                if (files[i].type != '') {
+                    this.fileAdd(files[i]);
+                } else {
+                    //文件夹处理
+                    this.folders(fileList.items[i]);
+                }
+            }
+        },
+        //文件夹处理
+        folders(files) {
+            let _this = this;
+            //判断是否为原生file
+            if (files.kind) {
+                files = files.webkitGetAsEntry();
+            }
+            files.createReader().readEntries(function (file) {
+                for (let i = 0; i < file.length; i++) {
+                    if (file[i].isFile) {
+                        _this.foldersAdd(file[i]);
+                    } else {
+                        _this.folders(file[i]);
+                    }
+                }
+            })
+        },
+        foldersAdd(entry) {
+            let _this = this;
+            entry.file(function (file) {
+                _this.fileAdd(file)
+            })
+        },
+        fileAdd(file) {
+            //总大小
+            this.size = this.size + file.size;
+            //判断是否为图片文件
+            if (file.type.indexOf('image') == -1) {
+                file.src = 'wenjian.png';
+                this.imgList.push({
+                    file
+                });
+            } else {
+                let reader = new FileReader();
+                reader.vue = this;
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    file.src = this.result;
+                    this.vue.imgList.push({
+                        file
+                    });
+                }
+            }
+        },
+        fileDel(index) {
+            this.size = this.size - this.imgList[index].file.size;//总大小
+            this.imgList.splice(index, 1);
+        },
+        bytesToSize(bytes) {
+            if (bytes === 0) return '0 B';
+            let k = 1000, // or 1024
+                sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+                i = Math.floor(Math.log(bytes) / Math.log(k));
+            return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+        },
+        dragenter(el) {
+            el.stopPropagation();
+            el.preventDefault();
+        },
+        dragover(el) {
+            el.stopPropagation();
+            el.preventDefault();
+        },
+        drop(el) {
+            el.stopPropagation();
+            el.preventDefault();
+            this.fileList(el.dataTransfer);
         },
         getKindData() {
 
@@ -146,10 +261,15 @@ var Main = {
         },
         chooseSuc(data) {
             // console.log("查到的档案信息为==>" + JSON.stringify(data))
-            this.tableTitle = this.tableTitle + data
+            // this.tableTitle = this.tableTitle + data
             data = this.zipContent(data)
             this.currentPage = 1
-            if (data < this.pageSize) {
+            
+            if (data.length == 0) {
+            	this.Toast('该目录下尚无档案',1000)
+			}
+            
+            if (data.length < this.pageSize) {
                 this.nowData = data
             } else {
                 this.nowData = data.slice(0, this.pageSize)
@@ -289,14 +409,99 @@ var Main = {
 
 
         choose(root, node, data) {
-            console.log("获取路径1==>" + JSON.stringify(node))
-            console.log("获取路径2==>" + JSON.stringify(data))
-            this.tableTitle = data.title
-            callAxiosGet("/archivesManagementBack/getArchivesByClassifyId.do", {'classifyId': data.classifyId}, this.chooseSuc, this.chooseFail)
+            this.tableClassifyId = data.classifyId
+            this.tableTitle = data.title + "(" + this.tableClassifyId + ")";
+            // console.log(data.classifyId)
+            if (data.children !== null) {
+                console.log("不是叶子")
+                this.nowData = []
+            } else {
+                console.log("是叶子")
+                callAxiosGet("/archivesManagementBack/getArchivesByClassifyId.do", {'classifyId': data.classifyId}, this.chooseSuc, this.chooseFail)
+                this.node = null;
+                this.num = 0;
+                this.array = []
+                // alert(node + num + array)
+                this.getArray(this.treeData, data.classifyId)
+                this.cascaderData = this.array
 
+                // alert(JSON.stringify(array))
+            }
+
+
+        },
+        getArray(data, name) {
+            // alert("调用")
+            for (let i in data) {
+                if (this.node) {
+                    console.log("终止递归")
+                    break;
+                }
+                if (data[i].classifyFatherId == 0) {
+                    console.log("===========================")
+                    this.num = 0
+                }
+
+                if (data[i].classifyFatherId == 0 || data[i].children !== null) {
+                    console.log(this.num + ":" + data[i].classifyId)
+                    this.array[this.num] = data[i].classifyId
+                    this.num++;
+                }
+
+                if (data[i].classifyId === name) {
+                    this.array[this.num] = data[i].classifyId
+                    console.log(this.num + ":" + data[i].classifyId)
+                    console.log("找到了" + JSON.stringify(this.array))
+                    this.node = data[i]
+                } else {
+
+                    if (data[i].children) {
+                        this.getArray(data[i].children, name);
+                    } else {
+                        continue
+                    }
+                }
+
+            }
         }
     }
 }
 
 var Component = Vue.extend(Main)
 new Component().$mount('#app')
+
+
+// function getArray(data, name) {
+//     // alert("调用")
+//     for (let i in data) {
+//         if (this.node) {
+//             console.log("终止递归")
+//             break;
+//         }
+//         if (data[i].classifyFatherId == 0) {
+//             console.log("===========================")
+//             num = 0
+//         }
+//
+//         if (data[i].classifyFatherId == 0 || data[i].children !== null) {
+//             console.log(num + ":" + data[i].classifyId)
+//             array[num] = data[i].classifyId
+//             num++;
+//         }
+//
+//         if (data[i].classifyId === name) {
+//             array[num] = data[i].classifyId
+//             console.log(num + ":" + data[i].classifyId)
+//             console.log("找到了" + JSON.stringify(array))
+//             node = data[i]
+//         } else {
+//
+//             if (data[i].children) {
+//                 getArray(data[i].children, name);
+//             } else {
+//                 continue
+//             }
+//         }
+//
+//     }
+// }

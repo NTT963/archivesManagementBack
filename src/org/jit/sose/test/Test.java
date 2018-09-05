@@ -22,8 +22,10 @@ import org.jit.sose.entity.Approve;
 import org.jit.sose.mapper.AdminMapper;
 import org.jit.sose.service.TeacherService;
 import org.jit.sose.service.impl.ArchivesService;
+import org.jit.sose.service.impl.FileConvertService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
@@ -54,10 +56,25 @@ public class Test {
 	@Autowired
 	AdminMapper adminMapper;
 
+	@Autowired
+	FileConvertService fileConvertService;
+
+//	@Value("#{configProperties['virtualURL']}")
+//	private String virtualURL;
+//
+//	@Value("#{configProperties['physicalURL']}")
+//	private String physicalURL;
+
+
+//	@Value("${virtualURL}")
+//	private String virtualURL;
+
+
 	@org.junit.Test
 	public void insertArchive(){
+		fileConvertService.convertOfficeToPDF("1111");
 //		System.out.println(adminMapper.updateArchiveState(761));
-		System.out.println(adminMapper.insertApprove(new Approve("3","3","1")));
+//		System.out.println(adminMapper.insertApprove(new Approve("3","3","1")));
 
 	}
 

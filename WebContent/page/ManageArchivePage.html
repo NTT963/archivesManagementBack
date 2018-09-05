@@ -30,7 +30,7 @@
                 <i-table border :columns="columns" :data="nowData"
                          no-data-text="请选择左侧目录"></i-table>
                 <modal v-model="modal" :title="modelTitle">
-                    <form style="margin-left: 10%;margin-right: 10%;margin-top: 15px" action="/archivesManagementBack/uploadFile//uploadArchive.do"
+                    <form style="margin-left: 10%;margin-right: 10%;margin-top: 15px" action="/archivesManagementBack/uploadFile/uploadArchive.do"
                           target="id_iframe" method="POST" enctype="multipart/form-data">
                         <input name="userId" v-model="userId" style="display:none;">
                         <row>
@@ -55,7 +55,7 @@
                             </li>
                         </ul>
                         <div style="margin-top: 20px">
-                            <i-button size="large" html-type="submit"  type="success" long>上传档案</i-button>
+                            <i-button size="large" html-type="submit"  @click="load" type="success" long>上传档案</i-button>
                         </div>
                         <!--防止上传后表单页面跳转-->
                         <iframe id="id_iframe" name="id_iframe" style="display:none;"></iframe>
@@ -71,7 +71,7 @@
                     <!--<i-button class="tableOperation">删除选中</i-button>-->
                     <i-button class="tableOperation" @click="addArchives">上传档案</i-button>
                     <page :total="dataCount" show-elevator
-                          show-sizer @on-change="changePage"
+                          @on-change="changePage"
                           @on-page-size-change="pageSizeChange"
                           :page-size-opts="pageSizeArray"></page>
                 </div>

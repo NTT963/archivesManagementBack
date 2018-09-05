@@ -76,6 +76,7 @@ var Main = {
             nowData: [],
             loading: true,
             tableTitle: '请点选择左侧目录',
+            tableClassifyId: '',
             modal: false,
             formItem: {
                 archivesId: '',
@@ -88,7 +89,10 @@ var Main = {
             imgList: [],
             size: 0,
             userId: '',
-            cascaderData: ['JXB', 'JXB02']
+            cascaderData: [],
+            node: null,
+            num: 0,
+            array: []
         }
     },
     mounted: function () {
@@ -146,7 +150,7 @@ var Main = {
         },
         chooseSuc(data) {
             // console.log("查到的档案信息为==>" + JSON.stringify(data))
-            this.tableTitle = this.tableTitle + data
+            // this.tableTitle = this.tableTitle + data
             data = this.zipContent(data)
             this.currentPage = 1
             if (data < this.pageSize) {
@@ -289,14 +293,99 @@ var Main = {
 
 
         choose(root, node, data) {
-            console.log("获取路径1==>" + JSON.stringify(node))
-            console.log("获取路径2==>" + JSON.stringify(data))
-            this.tableTitle = data.title
-            callAxiosGet("/archivesManagementBack/getArchivesByClassifyId.do", {'classifyId': data.classifyId}, this.chooseSuc, this.chooseFail)
+            this.tableClassifyId = data.classifyId
+            this.tableTitle = data.title + "(" + this.tableClassifyId + ")";
+            // console.log(data.classifyId)
+            if (data.children !== null) {
+                console.log("不是叶子")
+                this.nowData = []
+            } else {
+                console.log("是叶子")
+                callAxiosGet("/archivesManagementBack/getArchivesByClassifyId.do", {'classifyId': data.classifyId}, this.chooseSuc, this.chooseFail)
+                this.node = null;
+                this.num = 0;
+                this.array = []
+                // alert(node + num + array)
+                this.getArray(this.treeData, data.classifyId)
+                this.cascaderData = this.array
 
+                // alert(JSON.stringify(array))
+            }
+
+
+        },
+        getArray(data, name) {
+            // alert("调用")
+            for (let i in data) {
+                if (this.node) {
+                    console.log("终止递归")
+                    break;
+                }
+                if (data[i].classifyFatherId == 0) {
+                    console.log("===========================")
+                    this.num = 0
+                }
+
+                if (data[i].classifyFatherId == 0 || data[i].children !== null) {
+                    console.log(this.num + ":" + data[i].classifyId)
+                    this.array[this.num] = data[i].classifyId
+                    this.num++;
+                }
+
+                if (data[i].classifyId === name) {
+                    this.array[this.num] = data[i].classifyId
+                    console.log(this.num + ":" + data[i].classifyId)
+                    console.log("找到了" + JSON.stringify(this.array))
+                    this.node = data[i]
+                } else {
+
+                    if (data[i].children) {
+                        this.getArray(data[i].children, name);
+                    } else {
+                        continue
+                    }
+                }
+
+            }
         }
     }
 }
 
 var Component = Vue.extend(Main)
 new Component().$mount('#app')
+
+
+// function getArray(data, name) {
+//     // alert("调用")
+//     for (let i in data) {
+//         if (this.node) {
+//             console.log("终止递归")
+//             break;
+//         }
+//         if (data[i].classifyFatherId == 0) {
+//             console.log("===========================")
+//             num = 0
+//         }
+//
+//         if (data[i].classifyFatherId == 0 || data[i].children !== null) {
+//             console.log(num + ":" + data[i].classifyId)
+//             array[num] = data[i].classifyId
+//             num++;
+//         }
+//
+//         if (data[i].classifyId === name) {
+//             array[num] = data[i].classifyId
+//             console.log(num + ":" + data[i].classifyId)
+//             console.log("找到了" + JSON.stringify(array))
+//             node = data[i]
+//         } else {
+//
+//             if (data[i].children) {
+//                 getArray(data[i].children, name);
+//             } else {
+//                 continue
+//             }
+//         }
+//
+//     }
+// }

@@ -71,7 +71,7 @@
                     <!--<i-button class="tableOperation">删除选中</i-button>-->
                     <i-button class="tableOperation" @click="addArchives">上传档案</i-button>
                     <page :total="dataCount" show-elevator
-                          show-sizer @on-change="changePage"
+                          @on-change="changePage"
                           @on-page-size-change="pageSizeChange"
                           :page-size-opts="pageSizeArray"></page>
                 </div>

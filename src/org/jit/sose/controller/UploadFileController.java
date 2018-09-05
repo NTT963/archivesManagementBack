@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.jit.sose.entity.Approve;
 import org.jit.sose.entity.ArchivesInfo;
 import org.jit.sose.service.IArchivesService;
+import org.jit.sose.service.impl.FileConvertService;
 import org.jit.sose.utils.FileUtil;
 import org.jit.sose.utils.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class UploadFileController {
 
     @Autowired
     IArchivesService iArchivesService;
+    
+    @Autowired
+	FileConvertService fileConvertService;
 
     @ResponseBody
     @RequestMapping(value = "/uploadArchive.do")
@@ -77,11 +81,16 @@ public class UploadFileController {
                 ArchivesInfo archivesInfo = new ArchivesInfo(classifyID, archivesId, archivesName, content, archiveURL, state, uploadTime, uploadUserId);
 
                 int archiveId = iArchivesService.insertArchive(archivesInfo);
+                if(archiveId != 0) {
+                	fileConvertService.convertOfficeToPDF(archiveURL+"/"+archivesId);
+                }
+                	
                 System.out.println("插入主键ID===》" + archivesInfo.getID());
 //                iArchivesService.insertApprove(new Approve(userId, archivesId, classifyID));
 //                String classifyId, String archivesId, String archivesName, String content, String url, String state
             }
             resJson.put("success", true);
+//            return "redirect:/archivesManagementBack/fileHandle/convertOfficeToPDF.do?officePath="+;
         } else { // 文件上传失败的状态
             resJson.put("success", false);
         }
