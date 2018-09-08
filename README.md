@@ -2,3 +2,4 @@
 ![image](https://github.com/sunwujun/archivesManagementBack/blob/master/introduceImg/loginPage.PNG)
 ![image](https://github.com/sunwujun/archivesManagementBack/blob/master/introduceImg/mainPage.PNG)
 ![image](https://github.com/sunwujun/archivesManagementBack/blob/master/introduceImg/archivePreview.PNG)
+![image](https://github.com/sunwujun/archivesManagementBack/blob/master/introduceImg/echarts.png)
