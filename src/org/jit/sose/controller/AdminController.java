@@ -33,9 +33,12 @@ public class AdminController {
     @CrossOrigin(origins = "*", maxAge = 3600)
     public Map<String, Object> getArchiveWaitMeApprove(String adminID, int page) {
         Map<String, Object> map = new HashMap<>();
-        PageHelper.startPage(page, 10);
+
+
         List<ArchivesInfo> archivesInfos = adminMapper.getArchiveWaitMeApprove(adminID);
+        PageHelper.startPage(page, 10);
         PageInfo<ArchivesInfo> pageInfo = new PageInfo<>(archivesInfos);
+
         map.put("list", archivesInfos);
         map.put("total", pageInfo.getTotal());
         return map;

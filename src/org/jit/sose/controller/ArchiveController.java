@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.util.StringUtil;
@@ -35,77 +37,8 @@ public class ArchiveController {
     @Autowired
     IArchivesService iArchivesService;
 
-    @RequestMapping(value = "/testPOI.do")
-    @ResponseBody
-    @CrossOrigin(origins = "*", maxAge = 3600)
-    public void testPOI(){
-        java.io.File file = new File("/archive/JXB/JXB01/金陵科技学院课表编排规程.doc");
-        String tempDir = System.getProperty("java.io.tmpdir");
-        System.out.println("临时目录=========>"+tempDir);
-        System.out.println("字符编码"+StringUtil.WIN_1252);
-        String str = "";
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            System.out.println(readDoc(fis));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String readDoc (InputStream is) throws IOException {
-        String text= "";
-        is = FileMagic.prepareToCheckMagic(is);
-        try {
-            if (FileMagic.valueOf(is) == FileMagic.OLE2) {
-                WordExtractor ex = new WordExtractor(is);
-                text = ex.getText();
-                ex.close();
-            } else if(FileMagic.valueOf(is) == FileMagic.OOXML) {
-                XWPFDocument doc = new XWPFDocument(is);
-                XWPFWordExtractor extractor = new XWPFWordExtractor(doc);
-                text = extractor.getText();
-                extractor.close();
-            }
-        } catch (Exception e) {
-//			logger.error("for file " + filePath, e);
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-        return text;
-    }
-
-
-
-
-    @RequestMapping(value = "/getApproveByUserId.do")
-    @ResponseBody
-    @CrossOrigin(origins = "*", maxAge = 3600)
-    List<Approve> getApproveByUserId(String userId) {
-        List<Approve> list = iArchivesService.getApproveByUserId(userId);
-        return list;
-    }
-
-    @RequestMapping(value = "/insertArchiveSave.do", method = RequestMethod.POST)
-    @ResponseBody
-    @CrossOrigin(origins = "*", maxAge = 3600)
-    void insertArchiveSave(@RequestBody String saveInfo) {
-        ArchiveSave archiveSave = JSON.parseObject(saveInfo, new TypeReference<ArchiveSave>() {
-        });
-        iArchivesService.insertArchiveSave(archiveSave);
-
-    }
-
-    @RequestMapping(value = "/getArchiveSaves.do")
-    @ResponseBody
-    @CrossOrigin(origins = "*", maxAge = 3600)
-    List<ArchiveSave> getArchiveSaves(String userId) {
-        List<ArchiveSave> list = iArchivesService.getArchiveSaves(userId);
-        return list;
-    }
-
+    
+  
     @RequestMapping(value = "/getAllArchives.do")
     @ResponseBody
     @CrossOrigin(origins = "*", maxAge = 3600)
@@ -118,11 +51,6 @@ public class ArchiveController {
     @ResponseBody
     @CrossOrigin(origins = "*", maxAge = 3600)
     public JSONArray getArchivesByClassifyId(String classifyId) {
-
-        System.out.println("参数" + classifyId);
-		/*JSONObject.toJSON(iArchivesService.getArchivesByClassifyId(classifyId));
-		List<ArchivesInfo> archivesInfos = iArchivesService.getArchivesByClassifyId(classifyId);*/
-
         return (JSONArray) JSONArray.toJSON(iArchivesService.getArchivesByClassifyId(classifyId));
     }
 
@@ -130,7 +58,6 @@ public class ArchiveController {
     @ResponseBody
     @CrossOrigin(origins = "*", maxAge = 3600)
     public void addArchive(@RequestBody String archive) {
-
         ArchivesInfo archivesInfo = JSON.parseObject(archive, new TypeReference<ArchivesInfo>() {
         });
         System.out.println("新增档案" + archivesInfo.getArchivesName());
@@ -140,12 +67,17 @@ public class ArchiveController {
     @RequestMapping(value = "queryArchive.do", method = RequestMethod.GET)
     @ResponseBody
     @CrossOrigin(origins = "*", maxAge = 3600)
-    public JSONObject queryArchive(String keyWord) {
-        System.out.println("档案查询" + keyWord);
+    public JSONObject queryArchive(String keyWord, @RequestParam(required = true, defaultValue = "1") Integer page) {
+        System.out.println("档案查询" + keyWord + "页码" + page);
         JSONObject queryResult = new JSONObject();
+
+        PageHelper.startPage(page, 5);
         List<ArchivesInfo> archivesInfoList = iArchivesService.queryArchives(keyWord);
+        PageInfo<ArchivesInfo> p = new PageInfo<ArchivesInfo>(archivesInfoList);
+
+
         queryResult.put("result", "success");
-        queryResult.put("resultCount", archivesInfoList.size());
+        queryResult.put("resultCount", p.getTotal());
         queryResult.put("archiveList", JSONArray.toJSON(archivesInfoList));
         return queryResult;
     }
@@ -163,7 +95,6 @@ public class ArchiveController {
         hSession.setAttribute("userId", userId);
         System.out.println(hSession.getAttribute("userId"));
     }
-
 
 
     @ResponseBody
@@ -220,10 +151,6 @@ public class ArchiveController {
             resJson.put("success", false);
         }
     }
-
-
-
-
 
 
 }

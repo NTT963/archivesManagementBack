@@ -1,5 +1,6 @@
 package org.jit.sose.test;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -18,14 +19,14 @@ import org.apache.poi.util.StringUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jit.sose.entity.Approve;
 import org.jit.sose.mapper.AdminMapper;
+import org.jit.sose.mapper.IArchivesMapper;
+import org.jit.sose.mapper.ITotalChart;
 import org.jit.sose.service.TeacherService;
 import org.jit.sose.service.impl.ArchivesService;
 import org.jit.sose.service.impl.FileConvertService;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
@@ -36,28 +37,26 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
+@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 public class Test {
-//	@Autowired
+    //	@Autowired
 //	ArchiveModelService archiveModelService;
 //	@Autowired
 //	StudentServiceImpl studentService;
-	@Autowired
-	ArchivesService archivesService;
+    @Autowired
+    ArchivesService archivesService;
 
-	@Autowired
-	TeacherService teacherService;
+    @Autowired
+    TeacherService teacherService;
 
-	@Autowired
-	AdminMapper adminMapper;
+    @Autowired
+    AdminMapper adminMapper;
 
-	@Autowired
-	FileConvertService fileConvertService;
+    @Autowired
+    FileConvertService fileConvertService;
 
 //	@Value("#{configProperties['virtualURL']}")
 //	private String virtualURL;
@@ -69,87 +68,129 @@ public class Test {
 //	@Value("${virtualURL}")
 //	private String virtualURL;
 
+    @Autowired
+    IArchivesMapper iArchivesMapper;
 
-	@org.junit.Test
-	public void insertArchive(){
-		fileConvertService.convertOfficeToPDF("1111");
-//		System.out.println(adminMapper.updateArchiveState(761));
-//		System.out.println(adminMapper.insertApprove(new Approve("3","3","1")));
+    @Autowired
+    ITotalChart iTotalChart;
 
-	}
 
-	@org.junit.Test
-	public void test() {
+    @org.junit.Test
+    public void insertArchive() {
+//        Map<String,Object> resultMap = new HashMap<>();
+//        List<Map<String, Object>> LineGroup = iTotalChart.getLineGroudByDate();
+//        List<Map<String, Object>> weekExtraData = iTotalChart.getWeekEtraData();
+//        List<String> titles = iTotalChart.getBarTitle();
+//        String[] XData = new String[7];
+//        long[] YTotal = new long[7];
+//        int index = 0;
+//        for (Map<String, Object> item : LineGroup) {
+//            XData[index] = (String) item.get("data");
+//            YTotal[index] = (Long) item.get("total");
+//            index++;
+//        }
+//        boolean isFound = false;
+//        Map<String,Object> weekData = new HashMap<>();
+//        for (String title : titles) {
+//            long[] counts = new long[7];
+//            for (int i = 0; i < XData.length; i++) {
+//                System.out.println(title + " : " + XData[i]);
+//                for (Map<String, Object> item : weekExtraData) {
+//                    if (title.equals(item.get("title")) && XData[i].equals(item.get("data"))) {
+//                        isFound = true;
+//                        counts[i] = (long) item.get("count");
+//                        break;
+//                    }
+//                }
+//                if (!isFound) {
+//                    counts[i] = 0;
+//                }
+//            }
+//            isFound = false;
+//            weekData.put(title,counts);
+//        }
+//        resultMap.put("xData",XData);
+//        resultMap.put("legend",titles);
+//        resultMap.put("weekData",weekData);
+//        resultMap.put("total",YTotal);
+//        String json = JSONObject.toJSONString(resultMap);
+//        System.out.println(json);
+        System.out.println(iTotalChart.getArchiveCount());
 
-		String path = "/archive/中山大学2017硕士录取名单（公示）.xls";
-		// String path = "D:\\temp\\temp\\test.xlsx";
-		File file = new File(path);
-		InputStream is = null;
-		Workbook workbook = null;
-		try {
-			is = new FileInputStream(file);
-			if (path.endsWith(".xls")) {
-				workbook = new HSSFWorkbook(is);
-			} else if (path.endsWith(".xlsx")) {
-				workbook = new XSSFWorkbook(is);
-			}
-			if (workbook != null) {
-				int sheetCount = workbook.getNumberOfSheets();
-				if (sheetCount > 0) {
-					// 文本内容
-					StringBuilder content = new StringBuilder();
-					for (int i = 0; i < sheetCount; i++) {
-						Sheet sheet = workbook.getSheetAt(i);
-						content.append(sheet.getSheetName());
-						for (int rownum = sheet.getFirstRowNum(); rownum <= sheet.getLastRowNum(); rownum++) {
-							Row row = sheet.getRow(rownum);
-							if (row == null || row.getFirstCellNum() < 0) {
-								break;
-							}
-							for (int columnnum = row.getFirstCellNum(); columnnum <= row
-									.getLastCellNum(); columnnum++) {
-								String cellValue = getCellValue(row.getCell(columnnum));
-								content.append(cellValue);
-								if (content.length() > 500) {// 没500字输出一次
-									System.out.println(content.toString());
-									content.delete(0, content.length());
-								}
-							}
-						}
-					}
-					if (content.length() > 0) {
-						System.out.println(content.toString());
-					}
+    }
 
-				}
-			}
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-		} finally {
-			try {
-				if (workbook != null) {
-					workbook.close();
-				}
-				if (is != null) {
-					is.close();
-				}
-			} catch (IOException e) {
-			}
-		}
+    @org.junit.Test
+    public void test() {
+
+        String path = "/archive/中山大学2017硕士录取名单（公示）.xls";
+        // String path = "D:\\temp\\temp\\test.xlsx";
+        File file = new File(path);
+        InputStream is = null;
+        Workbook workbook = null;
+        try {
+            is = new FileInputStream(file);
+            if (path.endsWith(".xls")) {
+                workbook = new HSSFWorkbook(is);
+            } else if (path.endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(is);
+            }
+            if (workbook != null) {
+                int sheetCount = workbook.getNumberOfSheets();
+                if (sheetCount > 0) {
+                    // 文本内容
+                    StringBuilder content = new StringBuilder();
+                    for (int i = 0; i < sheetCount; i++) {
+                        Sheet sheet = workbook.getSheetAt(i);
+                        content.append(sheet.getSheetName());
+                        for (int rownum = sheet.getFirstRowNum(); rownum <= sheet.getLastRowNum(); rownum++) {
+                            Row row = sheet.getRow(rownum);
+                            if (row == null || row.getFirstCellNum() < 0) {
+                                break;
+                            }
+                            for (int columnnum = row.getFirstCellNum(); columnnum <= row
+                                    .getLastCellNum(); columnnum++) {
+                                String cellValue = getCellValue(row.getCell(columnnum));
+                                content.append(cellValue);
+                                if (content.length() > 500) {// 没500字输出一次
+                                    System.out.println(content.toString());
+                                    content.delete(0, content.length());
+                                }
+                            }
+                        }
+                    }
+                    if (content.length() > 0) {
+                        System.out.println(content.toString());
+                    }
+
+                }
+            }
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        } finally {
+            try {
+                if (workbook != null) {
+                    workbook.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+            }
+        }
 //		archivesService.insertApprove(new Approve("001","test","JCB"));
 //
 //		System.out.println(archivesService.getApproveByUserId("001").get(0).getArchiveID());
 
-	}
+    }
 
-	public String getCellValue(org.apache.poi.ss.usermodel.Cell cell) {
-		if (cell == null) {
-			return "";
-		}
-		// 都按文本格式读取
-		((org.apache.poi.ss.usermodel.Cell) cell).setCellType(CellType.STRING);
-		return ((org.apache.poi.ss.usermodel.Cell) cell).getStringCellValue();
-	}
+    public String getCellValue(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        // 都按文本格式读取
+        ((org.apache.poi.ss.usermodel.Cell) cell).setCellType(CellType.STRING);
+        return ((org.apache.poi.ss.usermodel.Cell) cell).getStringCellValue();
+    }
 
 //	private String getCellValue(Cell cell) {
 //		if (cell == null) {
@@ -160,9 +201,9 @@ public class Test {
 //		return ((org.apache.poi.ss.usermodel.Cell) cell).getStringCellValue();
 //	}
 
-	@org.junit.Test
-	public void addArchive() {
-		System.out.println(StringUtil.WIN_1252);
+    @org.junit.Test
+    public void addArchive() {
+        System.out.println(StringUtil.WIN_1252);
 
 //		String filePath = "/archive//JXM/JXM03/unix-实验报告.doc";
 //		File file = new File(filePath);
@@ -182,7 +223,7 @@ public class Test {
 //			e.printStackTrace();
 //		}
 
-	}
+    }
 //
 //
 //	File file = new File(chatFilePath + "/" + user_phone + ".txt");
@@ -193,103 +234,103 @@ public class Test {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 
-	@org.junit.Test
-	public void uploadFile() {
-		String strPath = "/archive/aaa.txt";
-		File file = new File(strPath);
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+    @org.junit.Test
+    public void uploadFile() {
+        String strPath = "/archive/aaa.txt";
+        File file = new File(strPath);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
-	@org.junit.Test
-	public void testPOI() {
-		File file = new File("/archive/JXM/JXM03/金陵科技学院课表编排规程.doc");
-		String str = "";
-		try {
-			FileInputStream fis = new FileInputStream(file);
+    @org.junit.Test
+    public void testPOI() {
+        File file = new File("/archive/JXM/JXM03/金陵科技学院课表编排规程.doc");
+        String str = "";
+        try {
+            FileInputStream fis = new FileInputStream(file);
 //			System.out.println(readDoc(fis));
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	public List<List<String>> readXls(String path) throws Exception {
-		InputStream is = new FileInputStream(path);
-		// HSSFWorkbook 标识整个excel
-		HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
-		List<List<String>> result = new ArrayList<List<String>>();
-		int size = hssfWorkbook.getNumberOfSheets();
-		// 循环每一页，并处理当前循环页
-		for (int numSheet = 0; numSheet < size; numSheet++) {
-			// HSSFSheet 标识某一页
-			HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
-			if (hssfSheet == null) {
-				continue;
-			}
-			// 处理当前页，循环读取每一行
-			for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
-				// HSSFRow表示行
-				HSSFRow hssfRow = hssfSheet.getRow(rowNum);
-				int minColIx = hssfRow.getFirstCellNum();
-				int maxColIx = hssfRow.getLastCellNum();
-				List<String> rowList = new ArrayList<String>();
-				// 遍历改行，获取处理每个cell元素
-				for (int colIx = minColIx; colIx < maxColIx; colIx++) {
-					// HSSFCell 表示单元格
-					HSSFCell cell = hssfRow.getCell(colIx);
-					if (cell == null) {
-						continue;
-					}
-					rowList.add(cell.toString());
-				}
-				result.add(rowList);
-			}
-		}
-		return result;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * 
-	 * @Title: readXlsx @Description: 处理Xlsx文件 @param @param
-	 * path @param @return @param @throws Exception 设定文件 @return List<List<String>>
-	 * 返回类型 @throws
-	 */
-	public List<List<String>> readXlsx(String path) throws Exception {
-		InputStream is = new FileInputStream(path);
-		XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
-		List<List<String>> result = new ArrayList<List<String>>();
-		// 循环每一页，并处理当前循环页
-		for (Sheet xssfSheet : xssfWorkbook) {
-			if (xssfSheet == null) {
-				continue;
-			}
-			// 处理当前页，循环读取每一行
-			for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
-				XSSFRow xssfRow = (XSSFRow) xssfSheet.getRow(rowNum);
-				int minColIx = xssfRow.getFirstCellNum();
-				int maxColIx = xssfRow.getLastCellNum();
-				List<String> rowList = new ArrayList<String>();
-				for (int colIx = minColIx; colIx < maxColIx; colIx++) {
-					XSSFCell cell = xssfRow.getCell(colIx);
-					if (cell == null) {
-						continue;
-					}
-					rowList.add(cell.toString());
-				}
-				result.add(rowList);
-			}
-		}
-		return result;
-	}
+    public List<List<String>> readXls(String path) throws Exception {
+        InputStream is = new FileInputStream(path);
+        // HSSFWorkbook 标识整个excel
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
+        List<List<String>> result = new ArrayList<List<String>>();
+        int size = hssfWorkbook.getNumberOfSheets();
+        // 循环每一页，并处理当前循环页
+        for (int numSheet = 0; numSheet < size; numSheet++) {
+            // HSSFSheet 标识某一页
+            HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
+            if (hssfSheet == null) {
+                continue;
+            }
+            // 处理当前页，循环读取每一行
+            for (int rowNum = 1; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
+                // HSSFRow表示行
+                HSSFRow hssfRow = hssfSheet.getRow(rowNum);
+                int minColIx = hssfRow.getFirstCellNum();
+                int maxColIx = hssfRow.getLastCellNum();
+                List<String> rowList = new ArrayList<String>();
+                // 遍历改行，获取处理每个cell元素
+                for (int colIx = minColIx; colIx < maxColIx; colIx++) {
+                    // HSSFCell 表示单元格
+                    HSSFCell cell = hssfRow.getCell(colIx);
+                    if (cell == null) {
+                        continue;
+                    }
+                    rowList.add(cell.toString());
+                }
+                result.add(rowList);
+            }
+        }
+        return result;
+    }
 
-	@org.junit.Test
-	public void readDoc() throws IOException, ParserConfigurationException {
+    /**
+     * @Title: readXlsx @Description: 处理Xlsx文件 @param @param
+     * path @param @return @param @throws Exception 设定文件 @return List<List<String>>
+     * 返回类型 @throws
+     */
+    public List<List<String>> readXlsx(String path) throws Exception {
+        InputStream is = new FileInputStream(path);
+        XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
+        List<List<String>> result = new ArrayList<List<String>>();
+        // 循环每一页，并处理当前循环页
+        for (Sheet xssfSheet : xssfWorkbook) {
+            if (xssfSheet == null) {
+                continue;
+            }
+            // 处理当前页，循环读取每一行
+            for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
+                XSSFRow xssfRow = (XSSFRow) xssfSheet.getRow(rowNum);
+                int minColIx = xssfRow.getFirstCellNum();
+                int maxColIx = xssfRow.getLastCellNum();
+                List<String> rowList = new ArrayList<String>();
+                for (int colIx = minColIx; colIx < maxColIx; colIx++) {
+                    XSSFCell cell = xssfRow.getCell(colIx);
+                    if (cell == null) {
+                        continue;
+                    }
+                    rowList.add(cell.toString());
+                }
+                result.add(rowList);
+            }
+        }
+        return result;
+    }
+
+    @org.junit.Test
+    public void readDoc() throws IOException, ParserConfigurationException {
 //		D:archive/JXB/JXB02/软件工程专业卓越工程师教育培养方案文字说明.docx
         final String path = "D:\\archive\\JXB\\JXB02\\";
         final String file = "软件工程专业卓越工程师教育培养方案文字说明.docx";
@@ -338,16 +379,16 @@ public class Test {
         }
         outStream.close();
         String content = new String(outStream.toByteArray());
-		content = content.replaceAll("</style>", ".b2{ margin: 1.0in 25% 0 25%;}</style>");
-		System.out.println(content);
-        FileUtils.writeStringToFile(new File(path, file+".html"), content, "utf-8");
-	}
-	
-	@org.junit.Test
+        content = content.replaceAll("</style>", ".b2{ margin: 1.0in 25% 0 25%;}</style>");
+        System.out.println(content);
+        FileUtils.writeStringToFile(new File(path, file + ".html"), content, "utf-8");
+    }
+
+    @org.junit.Test
     public void fileExists() {
-		String path = "D:/archive/JXP/JXP03/JXP0302/金陵科技学院监考守则.doc";
+        String path = "D:/archive/JXP/JXP03/JXP0302/金陵科技学院监考守则.doc";
         File file = new File(path);
-        if (!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
         }
     }

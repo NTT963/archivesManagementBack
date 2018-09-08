@@ -25,12 +25,22 @@
 
     <!--ID	userID	archiveName	url	saveTime-->
 
+    <select id="getMyUpload" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
+        SELECT ID,classifyId,archivesId,archivesName,CONCAT(LEFT(content,100),'......') AS content,url,state FROM archivesinfo WHERE uploadUserId = #{userId}
+    </select>
+
     <insert id="insertArchiveSave" parameterType="org.jit.sose.entity.ArchiveSave">
-        INSERT INTO `archiveSave` (`userID`, `archiveName`, `url`) VALUES (#{userID}, #{archiveName}, #{url})
+        INSERT INTO `archiveSave` (`userID`, `archiveID`) VALUES (#{userID}, #{archiveID})
     </insert>
 
-    <select id="getArchiveSaves" parameterType="string" resultType="org.jit.sose.entity.ArchiveSave">
-      SELECT * FROM archiveSave WHERE userID = #{userId}
+    <delete id="cancleSaveArchive" parameterType="org.jit.sose.entity.ArchiveSave">
+        DELETE FROM archivesave WHERE userID = #{userID} AND archiveID = #{archiveID}
+    </delete>
+    
+    
+
+    <select id="getArchiveSaves" parameterType="string" resultType="org.jit.sose.entity.ArchivesInfo">
+      SELECT * FROM archivesinfo WHERE ID IN (SELECT archiveID FROM archivesave WHERE userID = #{userId})
     </select>
 
 

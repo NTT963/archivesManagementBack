@@ -7,5 +7,6 @@ import java.util.Map;
  */
 public interface IFileConvertService {
     Map<String, Object> convertOfficeToPDF(String officePath);
+    String downloadArchive(String virtualURL);
 
 }

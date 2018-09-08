@@ -79,7 +79,7 @@
             return {
                 waitList: [],
                 current_page: 1, //当前页
-                pages: 50, //总页数
+                pages: 0, //总页数
                 changePage: '',//跳转页
                 nowIndex: 0
 
@@ -88,7 +88,7 @@
         },
         computed: {
             show: function () {
-                return this.pages && this.pages != 1
+                return this.pages
             },
             pstart: function () {
                 return this.current_page == 1;

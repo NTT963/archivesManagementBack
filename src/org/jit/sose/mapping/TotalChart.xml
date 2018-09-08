@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jit.sose.mapper.ITotalChart">
+    <select id="getArchivePie" resultType="java.util.HashMap">
+        SELECT COUNT(*) AS value , b.title AS name from archivesinfo a INNER JOIN classifytree b on LEFT(a.classifyId,3)=b.classifyId GROUP BY(LEFT(a.classifyId,3))
+    </select>
+    
+    <select id="getLineGroudByDate" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(uploadTime,'%Y-%m-%d') AS data, COUNT(*) AS total FROM archivesinfo WHERE uploadTime between current_date()-6 and sysdate() GROUP BY DATE_FORMAT(uploadTime,'%Y-%m-%d')
+    </select>
+
+    <select id="getBarTitle" resultType="string">
+        SELECT title FROM classifytree WHERE classifyFatherId = '0'
+    </select>
+
+    <select id="getArchiveCount" resultType="string">
+        SELECT COUNT(*) AS archiveCount FROM archivesinfo
+    </select>
+
+    <select id="getWeekEtraData" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(a.uploadTime,'%Y-%m-%d') AS data , b.title, COUNT(*) AS count from archivesinfo a INNER JOIN classifytree b on LEFT(a.classifyId,3)=b.classifyId
+        WHERE a.uploadTime between current_date()-6 and sysdate()
+        GROUP BY DATE_FORMAT(a.uploadTime,'%Y-%m-%d'),b.classifyId
+    </select>
+</mapper>

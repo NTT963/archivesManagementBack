@@ -30,7 +30,7 @@ public class FileConvertService implements IFileConvertService {
 
     @Override
     public Map<String, Object> convertOfficeToPDF(String officePath) {
-    	System.out.println("源文件路径"+officePath);
+        System.out.println("源文件路径" + officePath);
         Map<String, Object> resultMap = new HashMap<>();
         //获取文件的扩展名
         String ext = officePath.substring(officePath.lastIndexOf(".") + 1, officePath.length());
@@ -75,7 +75,7 @@ public class FileConvertService implements IFileConvertService {
             } else {
                 //不存在则生成预览文件
 
-                String targetDir = officePhysicalPath.substring(0,officePhysicalPath.lastIndexOf("/"));
+                String targetDir = officePhysicalPath.substring(0, officePhysicalPath.lastIndexOf("/"));
                 if (POIPptToHtml.pptToHtml(officePhysicalPath, targetDir)) {
                     //预览文件生成成功
                     resultMap.put("result", "success");
@@ -86,11 +86,25 @@ public class FileConvertService implements IFileConvertService {
                 }
 
             }
-        }else {
+        } else {
             System.out.println("不存在");
         }
 
 
         return resultMap;
+    }
+
+    @Override
+    public String downloadArchive(String url) {
+
+        String downloadURL = virtualURL + url;
+        String filePhysicalURL = physicalURL + url;
+        System.out.println(filePhysicalURL);
+        if (OfficeToHTMLUtil.fileIsExists(filePhysicalURL)) {
+            System.out.println("文件存在");
+            return downloadURL;
+        }else {
+            return "error";
+        }
     }
 }

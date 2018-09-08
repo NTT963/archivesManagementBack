@@ -14,9 +14,10 @@ public interface IArchivesMapper {
     List<ArchivesInfo> getArchivesByClassifyId(String classifyId);
 
     List<ArchivesInfo> queryArchives(String keyWord);
-
-    void insertArchiveSave(ArchiveSave archiveSave);
-    List<ArchiveSave> getArchiveSaves(String userId);
+    List<ArchivesInfo> getMyUpload(String userId);
+    int insertArchiveSave(ArchiveSave archiveSave);
+    int cancleSaveArchive(ArchiveSave archiveSave);
+    List<ArchivesInfo> getArchiveSaves(String userId);
     List<Approve> getApproveByUserId(String userId);
 
 }

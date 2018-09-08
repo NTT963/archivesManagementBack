@@ -31,4 +31,11 @@ public class FileController {
     public Map<String, Object> convertOfficeToPDF(String officePath) throws Exception {
         return fileConvertService.convertOfficeToPDF(officePath);
     }
+
+    @RequestMapping(value = "/downloadArchive.do")
+    @ResponseBody
+    @CrossOrigin(origins = "*", maxAge = 3600)
+    public String downloadArchive(String virtualURL) {
+        return fileConvertService.downloadArchive(virtualURL);
+    }
 }

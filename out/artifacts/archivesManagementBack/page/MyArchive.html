@@ -1,104 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>我的档案</title>
+    <!--引入js-->
+    <!--解决axios在ie和手机上的兼容性问题-->
+    <script type="text/javascript" src="../js/polyfill.min.js"></script>
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <script type="text/javascript" src="../js/callBackService.js"></script>
 </head>
-<body>
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
 
-<div id="content">
-    <div id="tab_bar">
-        <ul>
-            <li id="tab1" onclick="myclick(1)" style="background-color: #035391;color: white">
-                我上传的
-            </li>
-            <li id="tab2" onclick="myclick(2)">
-                与我相关
-            </li>
-            <!--<li id="tab3" onclick="myclick(3)">-->
-            <!--tab3-->
-            <!--</li>-->
-        </ul>
-    </div>
-    <div class="tab_css" id="tab1_content" style="display: block">
-        <div>页面一</div>
-    </div>
-    <div class="tab_css" id="tab2_content">
-        <div>页面二</div>
-    </div>
-    <div class="tab_css" id="tab3_content">
-        <div>页面三</div>
-    </div>
-</div>
-
-
-</body>
-<style type="text/css">
-    #content {
-        width: 100%;
-        height: 800px;
+    *, *::after, *::before {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    #tab_bar {
-        width: 100%;
-        height: 30px;
-        float: left;
+    body {
+        height: 100vh;
+        background: #FBFBFB;
+        font-family: "Open Sans", sans serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
-    #tab_bar ul {
-        padding: 0px;
-        margin: 0px;
-        height: 30px;
+    .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
         text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 10px;
+        cursor: pointer;
+        margin-right: 7px;
+        border-radius: 3px;
     }
 
-    #tab_bar li {
-        list-style-type: none;
-        float: left;
-        width: 133.3px;
-        height: 30px;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        padding-top: 5px;
-        margin-right: 3px;
-        background-color: 	#DCDCDC	;
+    .button2 {
+        background-color: #008CBA;
     }
 
-    .tab_css {
+    /* Blue */
+    .button3 {
+        background-color: #f44336;
+    }
+
+    .title {
+        color: #fff;
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 20px;
+    }
+
+    .title span {
+        display: block;
+        text-transform: none;
+        font-size: .70em;
+    }
+
+    .contenedor-acordeon {
         width: 100%;
-        height: 800px;
-        /*border: 3px solid #035391;*/
-        /*background-color: #035391;*/
-        display: none;
-        float: left;
+
+        overflow: hidden;
+        border-radius: 3px;
+    }
+
+    .acordeon {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .acordeon__head {
+        background: #ecf0f1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: .90em;
+        border-bottom: 0.2px solid rgba(0, 0, 0, 0.3);
+        /*box-shadow: 0 0 3px rgba(128, 128, 128, 0.5) inset;*/
+    }
+
+    .acordeon__head:hover {
+        cursor: pointer;
+    }
+
+    .acordeon__head--logo, .acordeon__head--title, .acordeon__head .icon {
+        pointer-events: none;
+    }
+
+    .acordeon__head--logo {
+        width: 45px;
+    }
+
+    .acordeon__head--title {
+        display: inline-block;
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: 600;
+        margin-left: 50px;
+        min-width: 90%;
+
+    }
+
+    .acordeon__head .icon {
+        font-size: .80em;
+        /*display: flex;*/
+        /*justify-content: flex-end;*/
+    }
+
+    .acordeon__body {
+        background: #D0D0D0;
+        height: auto;
+        transition: height .4s ease-in-out;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2) inset;
+    }
+
+    .acordeon__body__menu {
+        list-style: none;
+    }
+
+    .acordeon__body__menu li {
+        border-bottom: 0.2px solid rgba(0, 0, 0, 0.3);
+        padding: .80em;
+    }
+
+    /*.acordeon__body__menu li a {*/
+    /*display: block;*/
+    /*color: #fff;*/
+    /*text-decoration: none;*/
+    /*padding: 1em 0 1em 1.5em;*/
+    /*font-size: .70em;*/
+    /*line-height: 1.2em;*/
+    /*font-weight: 600;*/
+    /*}*/
+
+    .active {
+        height: 56px;
     }
 
 </style>
-<script type="text/javascript">
-    var myclick = function (v) {
-        var llis = document.getElementsByTagName("li");
-        for (var i = 0; i < llis.length; i++) {
-            var lli = llis[i];
-            if (lli == document.getElementById("tab" + v)) {
-                lli.style.backgroundColor = "#035391";
-                lli.style.color = "#FFFFFF"
-            } else {
-                lli.style.backgroundColor = "#DCDCDC";
+<body>
+<div id="app">
+    <div class="contenedor-acordeon" id="acordeon-content">
+        <div class="acordeon">
+            <div class="acordeon__head" @click="extendBody('mySave')"><img class="acordeon__head--logo"
+                                                                           src="../img/favorite.svg" alt="web design"/>
+                <p class="acordeon__head--title">我的收藏</p><img src="../img/down.png" width="20">
+            </div>
+            <div class="acordeon__body" v-if="extendKey.mySave">
+                <div class="acordeon__body__menu">
+                    <li v-if="mySaveList.length == 0"><a>你还没有收藏档案</a></li>
+                    <li v-for="(item,index) in mySaveList">
+                        <a style="color: white;font-size: 16px;font-weight:600;cursor:pointer;margin-left: 4%"
+                           @click="itemPreview(item.url+'/'+item.archivesId)">{{
+                            item.archivesName}}</a>
+                        <span style="float: right;margin-right: 15%">
+                            <button class="button" @click="itemPreview(item.url+'/'+item.archivesId)">
+                            预览档案
+                            </button>
+                        <button class="button button2"
+                                @click="downloadArchive(item.url+'/'+item.archivesId,item.archivesName)">下载档案</button>
+                        <button class="button button3" @click="cancleSaveArchive(item.id)">取消收藏</button>
+
+                        </span>
+
+                    </li>
+                </div>
+            </div>
+        </div>
+        <div class="acordeon">
+            <div class="acordeon__head" @click="extendBody('myUpload')"><img class="acordeon__head--logo"
+                                                                             src="../img/cloud-computing.svg"
+                                                                             alt="development"/>
+                <p class="acordeon__head--title">我上传的档案</p><img src="../img/down.png" width="20">
+            </div>
+            <div class="acordeon__body" v-if="extendKey.myUpload">
+                <div class="acordeon__body__menu">
+                    <li v-if="myUploadList.length == 0"><a>你还没有上传过档案</a></li>
+                    <li v-for="(item,index) in myUploadList">
+                        <a style="color: white;font-size: 16px;font-weight:600;cursor:pointer;margin-left: 4%"
+                           @click="itemPreview(item.url+'/'+item.archivesId)">{{
+                            item.archivesName}}</a>
+                        <span style="float: right;margin-right: 10%">
+                            <button class="button" @click="itemPreview(item.url+'/'+item.archivesId)">
+                            预览档案
+                            </button>
+                        <button class="button button2"
+                                @click="downloadArchive(item.url+'/'+item.archivesId,item.archivesName)">下载档案</button>
+                            <!--<button class="button button3" @click="cancleSaveArchive(item.id)">取消收藏</button>-->
+
+                        </span>
+
+                    </li>
+                </div>
+            </div>
+        </div>
+        <div class="acordeon">
+            <div class="acordeon__head" @click="extendBody('myRelative')"><img class="acordeon__head--logo"
+                                                                               src="../img/man.svg" alt="responsive"/>
+                <p class="acordeon__head--title">与我相关的档案</p><img src="../img/down.png" width="20">
+            </div>
+            <div class="acordeon__body" v-if="extendKey.myRelative">
+                <div class="acordeon__body__menu">
+                    <li v-if="myRelativeList.length == 0"><a>系统内没有与你相关的档案</a></li>
+                    <li v-for="(item,index) in myRelativeList">
+                        <a style="color: white;font-size: 16px;font-weight:600;cursor:pointer;margin-left: 4%"
+                           @click="itemPreview(item.url+'/'+item.archivesId)">{{
+                            item.archivesName}}</a>
+                        <span style="float: right;margin-right: 10%">
+                            <button class="button" @click="itemPreview(item.url+'/'+item.archivesId)">
+                            预览档案
+                            </button>
+                        <button class="button button2"
+                                @click="downloadArchive(item.url+'/'+item.archivesId,item.archivesName)">下载档案</button>
+                            <!--<button class="button button3" @click="cancleSaveArchive(item.id)">取消收藏</button>-->
+                        </span>
+
+                    </li>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+
+<script>
+    var Main = {
+        data() {
+            return {
+                extendKey: {
+                    mySave: false,
+                    myUpload: false,
+                    myRelative: false
+                },
+                mySaveList: [],
+                myUploadList: [],
+                myRelativeList: []
+
             }
-        }
+        },
+        mounted: function () {
+            console.log("获取cook信息===========》" + this.getCookie("userId"))
 
-        var divs = document.getElementsByClassName("tab_css");
-        for (var i = 0; i < divs.length; i++) {
+        },
+        methods: {
+            cancleSaveArchive(ID) {
+                callAxiosGetNoParams("/archivesManagementBack/mySave/cancleSaveArchive.do?archiveID=" + ID, this.cancelSuc, cancelFail)
 
-            var divv = divs[i];
+                function cancelFail(data) {
 
-            if (divv == document.getElementById("tab" + v + "_content")) {
-                divv.style.display = "block";
-            } else {
-                divv.style.display = "none";
+                }
+            },
+            cancelSuc(data) {
+                if (data.result = "success") {
+                    Toast("取消收藏", 1000)
+                    callAxiosGetNoParams("/archivesManagementBack/mySave/getArchivesSaveByUserId.do?userID=" + this.getCookie("userId"), this.getArchivesSaveByUserIdSuc, this.getArchivesSaveByUserIdSucFailed)
+                } else {
+                    Toast("操作异常", 1000)
+                }
+            },
+            downloadArchive(virtualURL, fileName) {
+                callAxiosGetNoParams("/archivesManagementBack/fileHandle/downloadArchive.do?virtualURL=" + virtualURL, getDownloadURLSuc, getDownloadURLFail)
+                // /archivesManagementBack/fileHandle/downloadArchive.do?virtualURL=/JXB/JXB02/JXB02171221302320180903024431_2017校精品、双语课程评审结果公文.doc
+                // console.log(virtualURL)
+                function getDownloadURLSuc(data) {
+                    console.log(data)
+                    const a = document.createElement('a');
+                    a.setAttribute('href', data);
+                    a.setAttribute('download', fileName);
+                    a.click();
+                }
+
+                function getDownloadURLFail(data) {
+
+                }
+            },
+            itemPreview(url) {
+                callAxiosGet("/archivesManagementBack/fileHandle/convertOfficeToPDF.do", {
+                    officePath: url
+                }, this.convertOfficeToPDFSuc, this.convertOfficeToPDFFail)
+                // alert(url)
+            },
+            convertOfficeToPDFSuc(data) {
+                // page/FileExplorePage.html?url=/archive/JXB/JXB02/test/软件工程专业卓越工程师教育培养方案文字说明.pdf
+                var previewURL = encodeURI("FileExplorePage.html?url=" + data.previewURL);   //使用encodeURI编码
+                // window.location.href =previewURL;
+                window.open(previewURL);
+                // alert(data.pdfURL)
+
+            },
+            convertOfficeToPDFFail(data) {
+            },
+            extendBody(bodyId) {
+                if (bodyId === "mySave") {
+                    console.log("我的收藏")
+                    if (this.extendKey.mySave) {
+                        this.extendKey.mySave = false
+                    } else {
+                        this.extendKey.mySave = true
+                        this.extendKey.myUpload = false
+                        this.extendKey.myRelative = false
+                        console.log("2===========》" + this.getCookie("userId"))
+                        callAxiosGetNoParams("/archivesManagementBack/mySave/getArchivesSaveByUserId.do?userID=" + this.getCookie("userId"), this.getArchivesSaveByUserIdSuc, this.getArchivesSaveByUserIdSucFailed)
+                    }
+                } else if (bodyId === "myUpload") {
+                    console.log("我的上传")
+                    if (this.extendKey.myUpload) {
+                        this.extendKey.myUpload = false
+                    } else {
+                        this.extendKey.mySave = false
+                        this.extendKey.myUpload = true
+                        this.extendKey.myRelative = false
+                        callAxiosGetNoParams("/archivesManagementBack/mySave/getMyUpload.do", this.getMyUploadSuc, this.getMyUploadFail)
+                    }
+
+                } else if (bodyId === "myRelative") {
+                    console.log("与我相关")
+                    if (this.extendKey.myRelative) {
+                        this.extendKey.myRelative = false
+                    } else {
+                        this.extendKey.mySave = false
+                        this.extendKey.myUpload = false
+                        this.extendKey.myRelative = true
+                        this.myRelativeList = []
+                        this.query(this.getCookie("userId"))
+                        this.query(this.getCookie("userName"))
+                    }
+                }
+            },
+            query(keyWord) {
+                callAxiosGetNoParams("/archivesManagementBack/queryArchive.do?keyWord=" + keyWord, this.querySuccess, this.queryFailed)
+            },
+            querySuccess(data) {
+            	console.log(data.archiveList)
+                this.myRelativeList = this.myRelativeList.concat(data.archiveList)
+            },
+            queryFailed(data) {
+
+            },
+            getMyUploadSuc(data) {
+                this.myUploadList = data.list
+            },
+            getMyUploadFail(data) {
+
+            },
+            getArchivesSaveByUserIdSuc(data) {
+                this.mySaveList = data.archivesInfos
+                console.log(this.mySaveList)
+            },
+            getArchivesSaveByUserIdSucFailed(data) {
+
+            },
+            getCookie(name) {
+                var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+                if (arr != null) {
+                    return unescape(arr[2]);
+                } else {
+                    return null;
+                }
             }
-        }
 
+
+        }
     }
+
+    var Component = Vue.extend(Main)
+    new Component().$mount('#app')
 </script>
+
+<script>
+
+    function Toast(msg, duration) {
+        duration = isNaN(duration) ? 3000 : duration;
+        var m = document.createElement('div');
+        m.innerHTML = msg;
+        m.style.cssText = "width: auto;padding: 10px 10px;min-width: 200px;opacity: 0.8;height: 40px;color: rgb(255, 255, 255);line-height: 30px;text-align: center;border-radius: 5px;position: fixed;top: 40%;left: 40%;z-index: 999999;background: rgb(0, 0, 0);font-size: 17px;";
+        document.body.appendChild(m);
+        setTimeout(function () {
+            var d = 0.5;
+            m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in';
+            m.style.opacity = '0';
+            setTimeout(function () {
+                document.body.removeChild(m)
+            }, d * 1000);
+        }, duration);
+    }
+
+</script>
+
 </html>

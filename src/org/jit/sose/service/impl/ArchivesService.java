@@ -32,20 +32,4 @@ public class ArchivesService implements IArchivesService{
         return iArchivesMapper.queryArchives(keyWord);
     }
 
-    @Override
-    public void insertArchiveSave(ArchiveSave archiveSave) {
-        iArchivesMapper.insertArchiveSave(archiveSave);
-    }
-
-    @Override
-    public List<ArchiveSave> getArchiveSaves(String userId) {
-        return iArchivesMapper.getArchiveSaves(userId);
-    }
-
-
-
-    @Override
-    public List<Approve> getApproveByUserId(String userId) {
-        return iArchivesMapper.getApproveByUserId(userId);
-    }
 }

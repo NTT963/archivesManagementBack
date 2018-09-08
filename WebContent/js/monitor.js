@@ -16,7 +16,8 @@ function drawLayer02Label(canvasObj,text,textBeginX,lineEndX){
 	ctx.strokeStyle = colorValue;
 	ctx.stroke();
 
-	ctx.font='12px Georgia';
+	ctx.font='16px Georgia';
+	ctx.fontWeight = '600'
 	ctx.fillStyle = colorValue;
 	ctx.fillText(text,textBeginX,92);
 }

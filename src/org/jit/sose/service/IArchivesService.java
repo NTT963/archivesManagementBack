@@ -11,7 +11,4 @@ public interface IArchivesService {
     int insertArchive(ArchivesInfo archivesInfo);
     List<ArchivesInfo> getArchivesByClassifyId(String classifyId);
     List<ArchivesInfo> queryArchives(String keyWord);
-    void insertArchiveSave(ArchiveSave archiveSave);
-    List<ArchiveSave> getArchiveSaves(String userId);
-    List<Approve> getApproveByUserId(String userId);
 }

@@ -5,7 +5,6 @@
     <title>Insert title here</title>
     <link rel="stylesheet" href="../css/iview.css">
     <link rel="stylesheet" href="../css/ionicons.css">
-
     <!--引入js-->
     <!--解决axios在ie和手机上的兼容性问题-->
     <script type="text/javascript" src="../js/polyfill.min.js"></script>
@@ -30,19 +29,23 @@
                 <i-table border :columns="columns" :data="nowData"
                          no-data-text="请选择左侧目录"></i-table>
                 <modal v-model="modal" :title="modelTitle">
-                    <form style="margin-left: 10%;margin-right: 10%;margin-top: 15px" action="/archivesManagementBack/uploadFile/uploadArchive.do"
+                    <form style="margin-left: 10%;margin-right: 10%;margin-top: 15px"
+                          action="/archivesManagementBack/uploadFile/uploadArchive.do"
                           target="id_iframe" method="POST" enctype="multipart/form-data">
                         <input name="userId" v-model="userId" style="display:none;">
                         <row>
                             <i-col span="4"><h2 style="margin-top: 5px">分类：</h2></i-col>
                             <i-col span="20">
-                                <Cascader name="path" :data="WXTreeData" v-model="cascaderData" trigger="hover" class="check-all"
+                                <Cascader name="path" :data="WXTreeData" v-model="cascaderData" trigger="hover"
+                                          class="check-all"
                                           @on-change="getKindData"></Cascader>
                             </i-col>
                         </row>
                         <!--accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"-->
-                        <input type="file" @change="showPreview($event)"  name="file" id="file" multiple style="display: none"/>
-                        <div class="upload_warp_left" @click="fileClick" @drop="drop($event)" @dragenter="dragenter($event)"
+                        <input type="file" @change="showPreview($event)" name="file" id="file" multiple
+                               style="display: none"/>
+                        <div class="upload_warp_left" @click="fileClick" @drop="drop($event)"
+                             @dragenter="dragenter($event)"
                              @dragover="dragover($event)">
                             <img src="../img/upload.png"><br>
                             <span v-if="imgList.length == 0">点击上传文件(word,pdf)</span>
@@ -55,7 +58,7 @@
                             </li>
                         </ul>
                         <div style="margin-top: 20px">
-                            <i-button size="large" html-type="submit"  @click="load" type="success" long>上传档案</i-button>
+                            <i-button size="large" html-type="submit" @click="load" type="success" long>上传档案</i-button>
                         </div>
                         <!--防止上传后表单页面跳转-->
                         <iframe id="id_iframe" name="id_iframe" style="display:none;"></iframe>
@@ -66,9 +69,11 @@
                 </modal>
                 <br>
                 <div style="display: inline-flex;margin-left: 30%;">
-                    <!--<i-button class="tableOperation" @click="handleSelectAll(true)">全选</i-button>-->
-                    <!--<i-button class="tableOperation" @click="handleSelectAll(false)">取消全选</i-button>-->
-                    <!--<i-button class="tableOperation">删除选中</i-button>-->
+                    <i-button class="tableOperation"
+                              @click="downloadArchive('/JXB/JXB02/JXB02171221302320180903024431_2017校精品、双语课程评审结果公文.doc')">
+                        下载
+                    </i-button>
+
                     <i-button class="tableOperation" @click="addArchives">上传档案</i-button>
                     <page :total="dataCount" show-elevator
                           @on-change="changePage"

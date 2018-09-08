@@ -23,7 +23,7 @@ var Main = {
     },
     mounted: function () {
         console.log("获取cook信息===========》" + this.getCookie("tab"))
-        console.log("获取cook信息===========》" + this.getCookie("userID"))
+        console.log("获取cook信息===========》" + this.getCookie("userId"))
         console.log("获取cook信息===========》" + this.getCookie("userName"))
         this.userInfo.userID = this.getCookie("userId")
         this.userInfo.userName = this.getCookie("userName")
