@@ -123,6 +123,7 @@ public class Test {
     public void test() {
 
         String path = "/archive/中山大学2017硕士录取名单（公示）.xls";
+
         // String path = "D:\\temp\\temp\\test.xlsx";
         File file = new File(path);
         InputStream is = null;
@@ -180,6 +181,7 @@ public class Test {
 //		archivesService.insertApprove(new Approve("001","test","JCB"));
 //
 //		System.out.println(archivesService.getApproveByUserId("001").get(0).getArchiveID());
+        System.out.println();
 
     }
 
